@@ -3,14 +3,11 @@ package Analizadores;
 import java_cup.runtime.*;
 import java.io.Reader;
 
-import java_cup.runtime.Symbol;
-import java_cup.runtime.ComplexSymbolFactory;
-import java_cup.runtime.ComplexSymbolFactory.Location;
-
 %%
 
 %public
 %class Lexer
+%cupsym sym
 %cup
 %char
 %line
