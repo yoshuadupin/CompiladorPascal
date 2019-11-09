@@ -903,7 +903,7 @@ public class Lexer implements java_cup.runtime.Scanner {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1: 
-            { error("Illegal character <"+ yytext()+"> @ Line " + (yyline+1));
+            { System.out.println(yytext()); error("Illegal character <"+ yytext()+"> @ Line " + (yyline+1));
             } 
             // fall through
           case 79: break;
@@ -1292,7 +1292,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           case 78: 
             { return symbol("procedure", sym.PROCEDURE);
             } 
-            // fall through
+            // fall through|
           case 156: break;
           default:
             zzScanError(ZZ_NO_MATCH);

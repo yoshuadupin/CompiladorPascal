@@ -124,7 +124,7 @@ id = {letter}({letter}|{digit}|[_])*
 
 	{id}			{ return symbol("id", sym.ID, yytext()); }
 
-	.				{ error("Illegal character <"+ yytext()+"> @ Line " + (yyline+1)); }
+	.				{ System.out.println(yytext()); error("Illegal character <"+ yytext()+"> @ Line " + (yyline+1)); }
 }
 
 <STRING> {
