@@ -638,7 +638,7 @@ class CUP$parser$actions {
                 DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
                 xmlDocument = docBuilder.newDocument();//Crear el documento XML
             } catch (Exception e) {
-                System.err.println("el Arbol tiene ERROR: " + e.getMessage());
+                System.err.println("El arbol tiene Error: " + e.getMessage());
             }
         }
     }

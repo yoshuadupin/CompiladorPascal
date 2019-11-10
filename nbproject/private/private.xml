@@ -5,8 +5,16 @@
         <group>
             <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Analizadores/PascalCompiler.java</file>
             <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Analizadores/sym.java</file>
+            <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Pruebas/bad2.pas</file>
+            <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Analizadores/TablaSimbolos.java</file>
             <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Analizadores/SemanticParser.java</file>
+            <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Pruebas/good1.pas</file>
+            <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Pruebas/bad3.pas</file>
             <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Analizadores/parser.java</file>
+            <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Generadores/A_Lexico.flex</file>
+            <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Pruebas/bad1.pas</file>
+            <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Pruebas/Prueba.pas</file>
+            <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Pruebas/good2.pas</file>
         </group>
     </open-files>
 </project-private>
