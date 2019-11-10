@@ -13,8 +13,8 @@ import java.util.ArrayList;
 public class TablaSimbolos {
 
     public ArrayList<Simbolo> Simbolos = new ArrayList();
-    String formatHeader = "%-20s %-60s %-15s %-15s %-15s %-15s %-15s %-18s";
-    String formatBody = "%-20s %-60s %-15s %-15s %-15s %-15s %-15s %-18s";
+    String formatHeader = "|%-20s |%-60s |%-15s |%-15s |%-15s |%-15s |%-15s |%-18s";
+    String formatBody = "|%-20s |%-60s |%-15s |%-15s |%-15s |%-15s |%-15s |%-18s";
 
     public int Add(Simbolo S) throws Exception {
         int itemIndex = this.getSymbolIndex(S);
@@ -89,7 +89,7 @@ public class TablaSimbolos {
     public String toString() {
         String headers = String.format(
                 formatHeader,
-                "ID",
+                "IDENTIFICADOR",
                 "TIPO",
                 "AMBITO",
                 "ES VARIABLE",
