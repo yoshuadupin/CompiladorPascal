@@ -8,149 +8,121 @@ package Analizadores;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int DIVIDE = 37;
-  public static final int STRING_LITERAL = 70;
-  public static final int FUNCTION = 12;
-  public static final int RIGHT_BRACKET = 29;
-  public static final int CHAR = 59;
-  public static final int PACKED = 54;
-  public static final int WITH = 48;
-  public static final int CONST = 7;
-  public static final int EQUALS = 41;
-  public static final int LEFT_KEY = 60;
-  public static final int CASE = 55;
-  public static final int NOT_EQUAL = 42;
-  public static final int XOR = 39;
-  public static final int INTEGER = 47;
-  public static final int REPEAT = 57;
-  public static final int FORWARD = 56;
-  public static final int PRODUCT = 38;
-  public static final int ARRAY = 6;
-  public static final int MINUS = 36;
-  public static final int FOR = 11;
-  public static final int GREATER_THAN = 43;
-  public static final int READ_LN = 63;
-  public static final int NOT = 15;
-  public static final int SEMICOLON = 30;
-  public static final int AND = 5;
-  public static final int RECORD = 19;
-  public static final int TYPE = 61;
-  public static final int NIL = 14;
-  public static final int IN = 50;
-  public static final int OR = 17;
-  public static final int COMMA = 32;
-  public static final int WRITE_LN = 62;
-  public static final int DIV = 8;
-  public static final int BEGIN = 3;
-  public static final int UNTIL = 58;
-  public static final int LESS_EQUAL = 46;
-  public static final int PLUS = 35;
-  public static final int GREATER_EQUALS = 45;
-  public static final int QUOTE = 25;
-  public static final int IF = 13;
-  public static final int ID = 49;
-  public static final int DOT = 33;
-  public static final int OF = 16;
-  public static final int BOOLEAN = 64;
+  public static final int PuntoPunto = 50;
+  public static final int OperadorDiferente = 12;
+  public static final int Begin = 29;
+  public static final int PuntoComa = 52;
+  public static final int Coma = 39;
+  public static final int BracketCerrar = 38;
+  public static final int Until = 36;
+  public static final int OperadorMayor = 13;
+  public static final int OperadorDivisionSpecial = 25;
+  public static final int End = 30;
+  public static final int Repeat = 35;
+  public static final int If = 26;
+  public static final int LlaveCerrar = 44;
+  public static final int DosPuntosIgual = 41;
+  public static final int Of = 5;
+  public static final int Var = 6;
+  public static final int ParentesisCerrar = 46;
+  public static final int Else = 28;
+  public static final int Read = 3;
+  public static final int Then = 27;
+  public static final int Punto = 51;
+  public static final int OperadorOr = 18;
+  public static final int While = 34;
+  public static final int To = 32;
+  public static final int TipoInteger = 9;
+  public static final int For = 31;
   public static final int EOF = 0;
-  public static final int TRUE = 66;
-  public static final int INT_CONST = 65;
+  public static final int DosPuntos = 40;
+  public static final int OperadorAnd = 17;
+  public static final int OperadorNot = 19;
+  public static final int Function = 49;
   public static final int error = 1;
-  public static final int PROGRAM = 2;
-  public static final int MOD = 40;
-  public static final int RIGHT_PAR = 27;
-  public static final int COLON = 31;
-  public static final int CHAR_CONS = 68;
-  public static final int ELSE = 10;
-  public static final int FILE = 53;
-  public static final int TO = 21;
-  public static final int WHILE = 24;
-  public static final int THEN = 20;
-  public static final int ASIGN = 34;
-  public static final int END = 4;
-  public static final int RIGHT_KEY = 69;
-  public static final int STRING = 51;
-  public static final int DOWNTO = 22;
-  public static final int FALSE = 67;
-  public static final int LEFT_PAR = 26;
-  public static final int LESS_THAN = 44;
-  public static final int LEFT_BRACKET = 28;
-  public static final int VAR = 23;
-  public static final int PROCEDURE = 18;
-  public static final int DO = 9;
-  public static final int SET = 52;
+  public static final int LiteralCaracter = 54;
+  public static final int ParentesisAbrir = 45;
+  public static final int OperadorResta = 21;
+  public static final int LlaveAbrir = 43;
+  public static final int Do = 33;
+  public static final int LiteralString = 56;
+  public static final int OperadorIgual = 11;
+  public static final int OperadorMod = 23;
+  public static final int TipoBoolean = 7;
+  public static final int Identificador = 42;
+  public static final int OperadorMenorIgual = 16;
+  public static final int Array = 4;
+  public static final int TipoChar = 8;
+  public static final int OperadorSuma = 20;
+  public static final int Write = 2;
+  public static final int OperadorMultiplicacion = 22;
+  public static final int Program = 47;
+  public static final int BracketAbrir = 37;
+  public static final int LiteralEntero = 53;
+  public static final int OperadorDivision = 24;
+  public static final int TipoString = 10;
+  public static final int OperadorMayorIgual = 15;
+  public static final int Procedure = 48;
+  public static final int OperadorMenor = 14;
+  public static final int LiteralBoolean = 55;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
-  "PROGRAM",
-  "BEGIN",
-  "END",
-  "AND",
-  "ARRAY",
-  "CONST",
-  "DIV",
-  "DO",
-  "ELSE",
-  "FOR",
-  "FUNCTION",
-  "IF",
-  "NIL",
-  "NOT",
-  "OF",
-  "OR",
-  "PROCEDURE",
-  "RECORD",
-  "THEN",
-  "TO",
-  "DOWNTO",
-  "VAR",
-  "WHILE",
-  "QUOTE",
-  "LEFT_PAR",
-  "RIGHT_PAR",
-  "LEFT_BRACKET",
-  "RIGHT_BRACKET",
-  "SEMICOLON",
-  "COLON",
-  "COMMA",
-  "DOT",
-  "ASIGN",
-  "PLUS",
-  "MINUS",
-  "DIVIDE",
-  "PRODUCT",
-  "XOR",
-  "MOD",
-  "EQUALS",
-  "NOT_EQUAL",
-  "GREATER_THAN",
-  "LESS_THAN",
-  "GREATER_EQUALS",
-  "LESS_EQUAL",
-  "INTEGER",
-  "WITH",
-  "ID",
-  "IN",
-  "STRING",
-  "SET",
-  "FILE",
-  "PACKED",
-  "CASE",
-  "FORWARD",
-  "REPEAT",
-  "UNTIL",
-  "CHAR",
-  "LEFT_KEY",
-  "TYPE",
-  "WRITE_LN",
-  "READ_LN",
-  "BOOLEAN",
-  "INT_CONST",
-  "TRUE",
-  "FALSE",
-  "CHAR_CONS",
-  "RIGHT_KEY",
-  "STRING_LITERAL"
+  "Write",
+  "Read",
+  "Array",
+  "Of",
+  "Var",
+  "TipoBoolean",
+  "TipoChar",
+  "TipoInteger",
+  "TipoString",
+  "OperadorIgual",
+  "OperadorDiferente",
+  "OperadorMayor",
+  "OperadorMenor",
+  "OperadorMayorIgual",
+  "OperadorMenorIgual",
+  "OperadorAnd",
+  "OperadorOr",
+  "OperadorNot",
+  "OperadorSuma",
+  "OperadorResta",
+  "OperadorMultiplicacion",
+  "OperadorMod",
+  "OperadorDivision",
+  "OperadorDivisionSpecial",
+  "If",
+  "Then",
+  "Else",
+  "Begin",
+  "End",
+  "For",
+  "To",
+  "Do",
+  "While",
+  "Repeat",
+  "Until",
+  "BracketAbrir",
+  "BracketCerrar",
+  "Coma",
+  "DosPuntos",
+  "DosPuntosIgual",
+  "Identificador",
+  "LlaveAbrir",
+  "LlaveCerrar",
+  "ParentesisAbrir",
+  "ParentesisCerrar",
+  "Program",
+  "Procedure",
+  "Function",
+  "PuntoPunto",
+  "Punto",
+  "PuntoComa",
+  "LiteralEntero",
+  "LiteralCaracter",
+  "LiteralBoolean",
+  "LiteralString"
   };
 }
 

@@ -19,7 +19,7 @@ public class CupGenerator {
         params[1] = "src/Analizadores/";
         params[2] = "-parser";
         params[3] = "parser";
-        params[4] = "src/Analizadores/A_Sintactico.cup";
+        params[4] = "src/Generadores/A_Sintactico.cup";
         try {
             java_cup.Main.main(params);
         } catch (Exception e) {

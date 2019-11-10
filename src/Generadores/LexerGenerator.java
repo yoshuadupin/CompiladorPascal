@@ -16,7 +16,7 @@ public class LexerGenerator {
         String paramsLexer[] = new String[3];
         paramsLexer[0] = "-d";
         paramsLexer[1] = "src/Analizadores/";
-        paramsLexer[2] = "src/Analizadores/A_Lexico.jflex";
+        paramsLexer[2] = "src/Generadores/A_Lexico.flex";
         try {
             jflex.Main.generate(paramsLexer);
         } catch (Exception e) {

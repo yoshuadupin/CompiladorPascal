@@ -5,8 +5,6 @@
  */
 package Analizadores;
 
-import Generadores.LexerGenerator;
-import Generadores.CupGenerator;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.BufferedReader;
@@ -18,12 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java_cup.runtime.*;
 import jflex.*;
-import ast.*;
 import Generadores.*;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.Reader;
 
 /**
@@ -41,22 +34,13 @@ public class PascalCompiler {
         CupGenerator.main(args);
         Reader reader;
         try {
-            reader = new BufferedReader(new FileReader("./src/Pruebas/Prueba.pas"));
+            reader = new BufferedReader(new FileReader("./src/Pruebas/bad1.pas"));
             Lexer lexer = new Lexer(reader);
             
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-            mapper.setVisibilityChecker(mapper.getSerializationConfig().getDefaultVisibilityChecker()
-                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
-                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-                .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
-                .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
-            mapper.setSerializationInclusion(Include.NON_NULL);
             //mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
            
             parser cupParser = new parser(lexer);
             cupParser.parse();
-            mapper.writeValue(new File("./src/Analizadores/AST.json"), cupParser.root);
 
             
         } catch (FileNotFoundException ex) {
