@@ -4,12 +4,15 @@ var
     e: boolean;
     asd: string;
 
+
 function x2(var z:boolean;x:integer;var y:char):boolean;
 var 
-    a:integer;
+    a,f:integer;
+    
 begin
     a := 1;
-    if ( a = 2) then
+    b:= b+a;
+    if ( a = f) then
     begin
         e := true;
     end;

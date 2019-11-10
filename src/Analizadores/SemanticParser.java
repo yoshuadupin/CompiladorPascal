@@ -35,9 +35,9 @@ public class SemanticParser {
             message = String.format(message, numErrores);
             System.err.println(message);
         } else {
+            System.err.println("------------------------------------------------------------------------");
+            Thread.sleep(1000);
             ts.toString();
-            System.err.println("------------------------------------------------------------------------");
-            System.err.println("------------------------------------------------------------------------");
         }
         return ts;
     }
@@ -179,10 +179,10 @@ public class SemanticParser {
                     Element IdNode = (Element) nodo.getFirstChild();
                     String IdValex = IdNode.getAttribute("Value");
                     Simbolo S = ts.getVariable(IdValex, ambitoActual);
-                    if(!ambitoActual.equals("main") && S == null){
+                    if (!ambitoActual.equals("main") && S == null) {
                         S = ts.getFunction(IdValex);
                     }
-                    if(S == null){
+                    if (S == null) {
                         S = ts.getVariable(IdValex, "main");
                     }
                     Linea = IdNode.getAttribute("Line");
@@ -193,7 +193,7 @@ public class SemanticParser {
                     tipoActual = "";
                     recorrerArbol(nodo, Linea, Columna);
                     tipoActual = "";
-                    
+
                     break;
                 }
                 case "ID": {
@@ -208,29 +208,30 @@ public class SemanticParser {
                     }
 
                     Simbolo S = ts.getVariable(idValex, ambitoActual);
-                    
-                    if(S == null){
+
+                    if (S == null) {
                         S = ts.getVariable(idValex, "main");
                     }
-                    
-                    if(inAFunction && tipoActual.isEmpty() && S == null){
+
+                    if (inAFunction && tipoActual.isEmpty() && S == null) {
                         S = ts.getFunction(idValex);
                         tipoActual = S.getTipo();
-                        Element parent = (Element)nodo.getParentNode();
+                        Element parent = (Element) nodo.getParentNode();
                         parent.setAttribute("Return", "true");
                     }
 
                     if (S == null) {
                         throwNotFoundError(Linea, Columna, idValex);
                     }
-                    
+
                     boolean isSameType = S.getTipo().equals(tipoActual);
                     if (!tipoActual.isEmpty() && !isSameType) {
                         String currentType = S.getTipo().split("\\.")[0];
                         throwIncompatibleTypeError(Linea, Columna, currentType);
                     } else {
-                        if(tipoActual.isEmpty())
+                        if (tipoActual.isEmpty()) {
                             tipoActual = S.getTipo();
+                        }
                     }
                     recorrerArbol(nodo, nodo.getAttribute("Line"), nodo.getAttribute("Column"));
                     break;
@@ -660,14 +661,14 @@ public class SemanticParser {
 
     private static void throwIncompatibleTypeError(String Linea, String Columna, String tipo) throws Exception {
         String errorMessage = "";
-        if(tipo.equals("void")){
+        if (tipo.equals("void")) {
             errorMessage = "(%s,%s) Error: Asignacion invalida, los procedimientos no retornan valor";
         } else {
             errorMessage = "(%s,%s) Error: Tipos incompatibles, se esperaba '%s' pero se encontro '%s'";
         }
-        
+
         errorMessage = String.format(errorMessage, Linea, Columna, tipoActual, tipo);
-        
+
         if (debug) {
             throw new Exception(errorMessage);
         } else {

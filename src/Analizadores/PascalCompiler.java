@@ -28,17 +28,15 @@ public class PascalCompiler {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         // TODO code application logic here
         LexerGenerator.main(args);
         CupGenerator.main(args);
         Reader reader;
         try {
-            reader = new BufferedReader(new FileReader("./src/Pruebas/bad1.pas"));
+            reader = new BufferedReader(new FileReader("./src/Pruebas/good1.pas"));
             Lexer lexer = new Lexer(reader);
-            
-            //mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-           
+                       
             parser cupParser = new parser(lexer);
             cupParser.parse();
 

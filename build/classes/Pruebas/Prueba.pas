@@ -1,10 +1,14 @@
 program EJER34;
- var num:integer;
+
 begin
- writeln("Introduzca un numero:");
+ writeln('hello');
  readln(num);
- if (num mod 2 = 0) then
- writeln("NUMERO PAR")
+ if (num = 0) then
+ begin
+     writeln('NUMERO PAR')
+ end   
  else
- writeln("NUMERO IMPAR");
-end
+ begin    
+ writeln('NUMERO IMPAR');
+end 
+end.
