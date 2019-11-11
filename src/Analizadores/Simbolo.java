@@ -13,20 +13,11 @@ public class Simbolo {
     private String valor;
     private String tipo;
     private String ambito;
-    private int refIndex = -1;
     private boolean variable = false;
     private boolean funcion = false;
     private boolean parametro = false;
-    private boolean byRef = false;
-    private int posicionMemoria;
+    private int offset  ;
 
-    public int getRefIndex() {
-        return refIndex;
-    }
-
-    public void setRefIndex(int refIndex) {
-        this.refIndex = refIndex;
-    }
     
     public String getAmbito() {
         return ambito;
@@ -36,13 +27,7 @@ public class Simbolo {
         this.ambito = ambito;
     }
 
-    public boolean isByRef() {
-        return byRef;
-    }
-
-    public void setByRef(boolean byRef) {
-        this.byRef = byRef;
-    }
+    
 
     
     public Simbolo() {
@@ -52,7 +37,7 @@ public class Simbolo {
         this.variable = false;
         this.funcion = false;
         this.parametro = false;
-        this.posicionMemoria = 0;
+        this.offset = 0;
         
     }
     
@@ -72,7 +57,7 @@ public class Simbolo {
     
     
     
-    public Simbolo(String id, String valor, String tipo, String ambito, boolean variable, boolean funcion, boolean parametro, int posicionMemoria) {
+    public Simbolo(String id, String valor, String tipo, String ambito, boolean variable, boolean funcion, boolean parametro, int offset) {
         this.id = id;
         this.valor = valor;
         this.tipo = tipo;
@@ -80,7 +65,7 @@ public class Simbolo {
         this.variable = variable;
         this.funcion = funcion;
         this.parametro = parametro;
-        this.posicionMemoria = posicionMemoria;
+        this.offset = offset;
     }
 
     public String getId() {
@@ -131,11 +116,11 @@ public class Simbolo {
         this.parametro = parametro;
     }
 
-    public int getPosicionMemoria() {
-        return posicionMemoria;
+    public int getOS() {
+        return offset;
     }
 
-    public void setPosicionMemoria(int posicionMemoria) {
-        this.posicionMemoria = posicionMemoria;
+    public void setOS(int offset) {
+        this.offset = offset;
     }
 }

@@ -4,5 +4,5 @@ var
     b: Array[1..10] of integer;
     c: boolean;
 begin
-    write('asd',b[11]);
+    write('ddadw',c);
 end.

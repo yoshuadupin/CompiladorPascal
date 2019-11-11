@@ -12,56 +12,36 @@ import org.w3c.dom.NodeList;
 /**
  *
  */
-public class SemanticParser {
+public class AnalizadorTipo {
 
     static String ambitoActual;
-    static TablaSimbolos ts = new TablaSimbolos();
-    static int offset;
-    static String tempType = "";
-    static ArrayList<Element> nodosHoja = new ArrayList();
+    static String tempTipo = "";
     static String tipoActual = "";
     static String tipoFuncion = "";
+    static ArrayList<Element> nodosHoja = new ArrayList();
     static int numErrores = 0;
     static boolean inAFunction = false;
     static boolean debug = false;
+    static TablaSimbolos tabla = new TablaSimbolos();
+    static int offset;
 
-    public static TablaSimbolos llenarTablaSimbolos(Element nodoPadre) throws Exception {
-        ambitoActual = "main";
-        numErrores = 0;
-        recorrerArbol(nodoPadre, "0", "0");
-        if (numErrores > 0) {
-            System.err.println("------------------------------------------------------------------------");
-            String message = "Se encontraron %d error(es), abortando compilación. \n";
-            message = String.format(message, numErrores);
-            System.err.println(message);
-        } else {
-            System.err.println("------------------------------------------------------------------------");
-            Thread.sleep(1000);
-            ts.toString();
-        }
-        return ts;
-    }
-
-    private static void recorrerArbol(Element nodoPadre, String Linea, String Columna) throws Exception {
+    private static void recorrerArbol(Element nodoPadre, String linea, String columna) throws Exception {
         NodeList hijos = nodoPadre.getChildNodes();
 
         for (int i = 0; i < hijos.getLength(); i++) {
             Element nodo = (Element) hijos.item(i);
             String nodeName = nodo.getNodeName();
-            if (debug) {
-                System.out.println("RecorrerArbol - " + nodeName);
-            }
             switch (nodeName) {
                 case "ReadStatement": {
                     tipoActual = "";
-                    recorrerArbol(nodo, Linea, Columna);
+                    recorrerArbol(nodo, linea, columna);
                     if (tipoActual.equals("boolean") || tipoActual.startsWith("Array")) {
                         String tipo = tipoActual;
                         tipoActual = "[string, integer, char]";
                         Element arg = (Element) nodo.getFirstChild();
-                        Linea = arg.getAttribute("Line");
-                        Columna = arg.getAttribute("Column");
-                        throwIncompatibleTypeError(Linea, Columna, tipo);
+                        linea = arg.getAttribute("Line");
+                        columna = arg.getAttribute("Column");
+                        throwIncompatibleTypeError(linea, columna, tipo);
                         tipoActual = tipo;
                     }
                     break;
@@ -70,14 +50,14 @@ public class SemanticParser {
                     tipoActual = "";
                     NodeList lista = nodo.getChildNodes();
                     if (lista.getLength() > 1) {
-                        recorrerArbol(nodo, Linea, Columna);
+                        recorrerArbol(nodo, linea, columna);
                         if (tipoActual.equals("boolean") || tipoActual.startsWith("Array")) {
                             String tipo = tipoActual;
                             tipoActual = "[string, integer, char]";
                             Element arg = (Element) nodo.getFirstChild();
-                            Linea = arg.getAttribute("Line");
-                            Columna = arg.getAttribute("Column");
-                            throwIncompatibleTypeError(Linea, Columna, tipo);
+                            linea = arg.getAttribute("Line");
+                            columna = arg.getAttribute("Column");
+                            throwIncompatibleTypeError(linea, columna, tipo);
                             tipoActual = tipo;
                         }
                     }
@@ -93,7 +73,7 @@ public class SemanticParser {
                     for (int j = 0; j < idList.getLength(); j++) {
                         String ID = ((Element) idList.item(j)).getAttribute("Value");
                         Simbolo S = new Simbolo(ID, null, type, ambitoActual, true, false, false, offset);
-                        ts.Add(S);
+                        tabla.add(S);
                         offset += size;
                     }
                     break;
@@ -101,24 +81,19 @@ public class SemanticParser {
                 case "inlineArg": {
                     String type = ((Element) nodo.getLastChild()).getAttribute("Value");
                     String strSize = ((Element) nodo.getLastChild()).getAttribute("Size");
-                    String isPointer = ((Element) nodo.getLastChild()).getAttribute("isPointer");
 
                     int size = Integer.parseInt(strSize.isEmpty() ? "0" : strSize);
                     NodeList idList = nodo.getElementsByTagName("ID");
                     for (int j = 0; j < idList.getLength(); j++) {
-                        if (tempType.isEmpty()) {
-                            tempType += type;
+                        if (tempTipo.isEmpty()) {
+                            tempTipo += type;
                         } else {
-                            tempType += "X" + type;
+                            tempTipo += "X" + type;
                         }
                         String ID = ((Element) idList.item(j)).getAttribute("Value");
                         Simbolo S = new Simbolo(ID, null, type, ambitoActual, false, false, true, offset);
-                        if (isPointer.equals("true")) {
-                            S.setByRef(true);
-                        } else {
-                            S.setByRef(false);
-                        }
-                        ts.Add(S);
+
+                        tabla.add(S);
                         offset += size;
                     }
                     break;
@@ -126,19 +101,19 @@ public class SemanticParser {
                 case "ProcedureDeclaration": {
                     String ID = nodo.getAttribute("ID");
                     Simbolo S = new Simbolo(ID, null, "void -> void", "main", false, true, false, offset);
-                    int indice = ts.Add(S);
+                    int indice = tabla.add(S);
                     ambitoActual = nodo.getAttribute("ID");
                     int backupOffset = offset;
                     offset = 0;
                     inAFunction = true;
-                    recorrerArbol(nodo, Linea, Columna);
+                    recorrerArbol(nodo, linea, columna);
                     inAFunction = false;
-                    if (!tempType.isEmpty()) {
-                        tempType += " -> void";
-                        S.setTipo(tempType);
-                        ts.replaceNode(S, indice);
+                    if (!tempTipo.isEmpty()) {
+                        tempTipo += " -> void";
+                        S.setTipo(tempTipo);
+                        tabla.replaceNode(S, indice);
                     }
-                    tempType = "";
+                    tempTipo = "";
                     ambitoActual = "main";
                     offset = backupOffset;
                     break;
@@ -146,52 +121,52 @@ public class SemanticParser {
                 case "FunctionDeclaration": {
                     String ID = nodo.getAttribute("ID");
                     String type = nodo.getAttribute("Type");
-                    Simbolo S = new Simbolo(ID, null, type, "null", false, true, false, offset);
-                    int indice = ts.Add(S);
+                    Simbolo S = new Simbolo(ID, null, type, ambitoActual, false, true, false, offset);
+                    int indice = tabla.add(S);
                     int backupOffset = offset;
                     offset = 0;
                     ambitoActual = nodo.getAttribute("ID");
                     inAFunction = true;
-                    recorrerArbol(nodo, Linea, Columna);
+                    recorrerArbol(nodo, linea, columna);
                     inAFunction = false;
-                    if (!tempType.isEmpty()) {
-                        tempType += " -> " + type;
-                        S.setTipo(tempType);
+                    if (!tempTipo.isEmpty()) {
+                        tempTipo += " -> " + type;
+                        S.setTipo(tempTipo);
                     } else {
                         S.setTipo("void -> " + type);
                     }
-                    ts.replaceNode(S, indice);
-                    tempType = "";
+                    tabla.replaceNode(S, indice);
+                    tempTipo = "";
                     ambitoActual = "main";
                     offset = backupOffset;
                     break;
                 }
                 case "Literal": {
                     String type = nodo.getAttribute("Type");
-                    Linea = nodo.getAttribute("Line");
-                    Columna = nodo.getAttribute("Column");
+                    linea = nodo.getAttribute("Line");
+                    columna = nodo.getAttribute("Column");
                     if (!tipoActual.isEmpty() && !tipoActual.equals(type)) {
-                        throwIncompatibleTypeError(Linea, Columna, type);
+                        throwIncompatibleTypeError(linea, columna, type);
                     }
                     break;
                 }
                 case "Assignment": {
                     Element IdNode = (Element) nodo.getFirstChild();
                     String IdValex = IdNode.getAttribute("Value");
-                    Simbolo S = ts.getVariable(IdValex, ambitoActual);
+                    Simbolo S = tabla.getVariable(IdValex, ambitoActual);
                     if (!ambitoActual.equals("main") && S == null) {
-                        S = ts.getFunction(IdValex);
+                        S = tabla.getFunction(IdValex);
                     }
                     if (S == null) {
-                        S = ts.getVariable(IdValex, "main");
+                        S = tabla.getVariable(IdValex, "main");
                     }
-                    Linea = IdNode.getAttribute("Line");
-                    Columna = IdNode.getAttribute("Column");
+                    linea = IdNode.getAttribute("Line");
+                    columna = IdNode.getAttribute("Column");
                     if (S == null) {
-                        throwNotFoundError(Linea, Columna, IdValex);
+                        throwNotFoundError(linea, columna, IdValex);
                     }
                     tipoActual = "";
-                    recorrerArbol(nodo, Linea, Columna);
+                    recorrerArbol(nodo, linea, columna);
                     tipoActual = "";
 
                     break;
@@ -200,34 +175,34 @@ public class SemanticParser {
                     String idValex = nodo.getAttribute("Value");
                     String parentName = nodo.getParentNode().getNodeName();
                     boolean programIsParent = parentName.equals("Program");
-                    Linea = nodo.getAttribute("Line");
-                    Columna = nodo.getAttribute("Column");
+                    linea = nodo.getAttribute("Line");
+                    columna = nodo.getAttribute("Column");
                     if (programIsParent) {
                         recorrerArbol(nodo, nodo.getAttribute("Line"), nodo.getAttribute("Column"));
                         break;
                     }
 
-                    Simbolo S = ts.getVariable(idValex, ambitoActual);
+                    Simbolo S = tabla.getVariable(idValex, ambitoActual);
 
                     if (S == null) {
-                        S = ts.getVariable(idValex, "main");
+                        S = tabla.getVariable(idValex, "main");
                     }
 
                     if (inAFunction && tipoActual.isEmpty() && S == null) {
-                        S = ts.getFunction(idValex);
+                        S = tabla.getFunction(idValex);
                         tipoActual = S.getTipo();
                         Element parent = (Element) nodo.getParentNode();
                         parent.setAttribute("Return", "true");
                     }
 
                     if (S == null) {
-                        throwNotFoundError(Linea, Columna, idValex);
+                        throwNotFoundError(linea, columna, idValex);
                     }
 
                     boolean isSameType = S.getTipo().equals(tipoActual);
                     if (!tipoActual.isEmpty() && !isSameType) {
                         String currentType = S.getTipo().split("\\.")[0];
-                        throwIncompatibleTypeError(Linea, Columna, currentType);
+                        throwIncompatibleTypeError(linea, columna, currentType);
                     } else {
                         if (tipoActual.isEmpty()) {
                             tipoActual = S.getTipo();
@@ -241,13 +216,12 @@ public class SemanticParser {
                     tipoFuncion = "";
                     Element functionId = (Element) nodo.getFirstChild();
                     String id = functionId.getAttribute("Value");
-                    Linea = functionId.getAttribute("Line");
-                    Columna = functionId.getAttribute("Column");
-                    Simbolo S = ts.getFunction(id);
+                    linea = functionId.getAttribute("Line");
+                    columna = functionId.getAttribute("Column");
+                    Simbolo S = tabla.getFunction(id);
                     String tipoRetorno = "";
                     if (S == null) {
-                        throwNotFoundError(Linea, Columna, id);
-
+                        throwNotFoundError(linea, columna, id);
                     }
                     tipoRetorno = S.getTipo().split(" -> ")[1];
 
@@ -258,10 +232,10 @@ public class SemanticParser {
                         tipoFuncion = "void -> " + tipoRetorno;
                     }
                     if (!tipoActual.isEmpty() && !tipoActual.equals(tipoRetorno)) {
-                        throwIncompatibleTypeError(Linea, Columna, tipoRetorno);
+                        throwIncompatibleTypeError(linea, columna, tipoRetorno);
                     }
                     if (!tipoFuncion.equals(S.getTipo())) {
-                        throwFunctionArgsError(Linea, Columna, id);
+                        throwFunctionArgsError(linea, columna, id);
                     }
                     tipoFuncion = tipoBKP;
 
@@ -274,15 +248,15 @@ public class SemanticParser {
                 case "GreaterOrEqual":
                 case "Different": {
                     if (!tipoActual.isEmpty() && tipoActual.equals("boolean")) {
-                        String tipoActualBKP = tipoActual;
+                        String tipoActualTemp = tipoActual;
                         tipoActual = "";
                         comprobarTipos(nodo);
-                        tipoActual = tipoActualBKP;
+                        tipoActual = tipoActualTemp;
                     } else if (tipoActual.isEmpty()) {
                         comprobarTipos(nodo);
                         tipoActual = "";
                     } else {
-                        throwIncompatibleTypeError(Linea, Columna, "boolean");
+                        throwIncompatibleTypeError(linea, columna, "boolean");
                     }
 
                     break;
@@ -291,34 +265,34 @@ public class SemanticParser {
                 case "OR":
                 case "NOT": {
                     if (!tipoActual.isEmpty() && tipoActual.equals("boolean")) {
-                        recorrerArbol(nodo, Linea, Columna);
+                        recorrerArbol(nodo, linea, columna);
                         tipoActual = "";
                     } else if (tipoActual.isEmpty()) {
-                        recorrerArbol(nodo, Linea, Columna);
+                        recorrerArbol(nodo, linea, columna);
                     } else {
-                        throwIncompatibleTypeError(Linea, Columna, "boolean");
+                        throwIncompatibleTypeError(linea, columna, "boolean");
                     }
                     break;
                 }
                 case "IfStatement": {
-                    Linea = nodo.getAttribute("Line");
-                    Columna = nodo.getAttribute("Column");
+                    linea = nodo.getAttribute("Line");
+                    columna = nodo.getAttribute("Column");
                     String tipoBKP = tipoActual;
                     tipoActual = "boolean";
-                    recorrerArbol(nodo, Linea, Columna);
+                    recorrerArbol(nodo, linea, columna);
                     tipoActual = tipoBKP;
                     break;
                 }
                 case "ARRAY": {
                     String id = nodo.getAttribute("Value");
-                    Simbolo S = ts.getVariable(id, ambitoActual);
-                    Linea = nodo.getAttribute("Line");
-                    Columna = nodo.getAttribute("Column");
+                    Simbolo S = tabla.getVariable(id, ambitoActual);
+                    linea = nodo.getAttribute("Line");
+                    columna = nodo.getAttribute("Column");
 
                     if (S == null) {
-                        throwNotFoundError(Linea, Columna, id);
+                        throwNotFoundError(linea, columna, id);
                     } else if (!S.getTipo().startsWith("Array")) {
-                        throwIlegalExpresionError(Linea, Columna);
+                        throwIlegalExpresionError(linea, columna);
                     } else {
                         String tipo = S.getTipo().split("\\.")[1];
                         String tipoBKP = tipoActual;
@@ -333,19 +307,34 @@ public class SemanticParser {
                             comprobarTipos(nodo);
                             tipoActual = tipoBKP;
                         } else {
-                            throwIncompatibleTypeError(Linea, Columna, tipo);
+                            throwIncompatibleTypeError(linea, columna, tipo);
                         }
 
                     }
                     break;
                 }
                 default: {
-                    recorrerArbol(nodo, Linea, Columna);
+                    recorrerArbol(nodo, linea, columna);
                     break;
                 }
             }
         }
 
+    }
+
+    public static TablaSimbolos llenarTablaSimbolos(Element nodoPadre) throws Exception {
+        ambitoActual = "main";
+        numErrores = 0;
+        recorrerArbol(nodoPadre, "0", "0");
+        if (numErrores > 0) {
+            String message = "Abortando compilación, cantidad de errores encontrados %d. \n";
+            message = String.format(message, numErrores);
+            System.err.println(message);
+        } else {
+            Thread.sleep(1000);
+            tabla.toString();
+        }
+        return tabla;
     }
 
     private static void comprobarTipos(Element nodoPadre) throws Exception {
@@ -372,7 +361,7 @@ public class SemanticParser {
                 }
                 case "ID": {
                     String id = nodo.getAttribute("Value");
-                    Simbolo S = ts.getVariable(id, ambitoActual);
+                    Simbolo S = tabla.getVariable(id, ambitoActual);
                     if (S == null) {
                         String Line = nodo.getAttribute("Line");
                         String Column = nodo.getAttribute("Column");
@@ -405,13 +394,13 @@ public class SemanticParser {
                 }
                 case "ARRAY": {
                     String id = nodo.getAttribute("Value");
-                    Simbolo S = ts.getVariable(id, ambitoActual);
-                    String Linea = nodo.getAttribute("Line");
-                    String Columna = nodo.getAttribute("Column");
+                    Simbolo S = tabla.getVariable(id, ambitoActual);
+                    String linea = nodo.getAttribute("Line");
+                    String columna = nodo.getAttribute("Column");
                     if (S == null) {
-                        throwNotFoundError(Linea, Columna, id);
+                        throwNotFoundError(linea, columna, id);
                     } else if (!S.getTipo().startsWith("Array")) {
-                        throwIlegalExpresionError(Linea, Columna);
+                        throwIlegalExpresionError(linea, columna);
                     } else {
                         String tipo = S.getTipo().split("\\.")[1];
                         String tipoBKP = tipoActual;
@@ -423,7 +412,7 @@ public class SemanticParser {
                             comprobarTipos(nodo);
 
                         } else {
-                            throwIncompatibleTypeError(Linea, Columna, tipo);
+                            throwIncompatibleTypeError(linea, columna, tipo);
                         }
                         tipoActual = tipoBKP;
                     }
@@ -461,7 +450,7 @@ public class SemanticParser {
                 }
                 case "ID": {
                     String id = nodo.getAttribute("Value");
-                    Simbolo S = ts.getVariable(id, ambitoActual);
+                    Simbolo S = tabla.getVariable(id, ambitoActual);
                     if (S == null) {
                         String Line = nodo.getAttribute("Line");
                         String Column = nodo.getAttribute("Column");
@@ -484,13 +473,13 @@ public class SemanticParser {
                 }
                 case "ARRAY": {
                     String id = nodo.getAttribute("Value");
-                    Simbolo S = ts.getVariable(id, ambitoActual);
-                    String Linea = nodo.getAttribute("Line");
-                    String Columna = nodo.getAttribute("Column");
+                    Simbolo S = tabla.getVariable(id, ambitoActual);
+                    String linea = nodo.getAttribute("Line");
+                    String columna = nodo.getAttribute("Column");
                     if (S == null) {
-                        throwNotFoundError(Linea, Columna, id);
+                        throwNotFoundError(linea, columna, id);
                     } else if (!S.getTipo().startsWith("Array")) {
-                        throwIlegalExpresionError(Linea, Columna);
+                        throwIlegalExpresionError(linea, columna);
                     } else {
                         String tipo = S.getTipo().split("\\.")[1];
                         String tipoBKP = tipoActual;
@@ -503,7 +492,7 @@ public class SemanticParser {
                             comprobarTipos(nodo);
 
                         } else {
-                            throwIncompatibleTypeError(Linea, Columna, tipo);
+                            throwIncompatibleTypeError(linea, columna, tipo);
                         }
                         tipoActual = tipoBKP;
                     }
@@ -526,7 +515,7 @@ public class SemanticParser {
             switch (nodeName) {
                 case "ID": {
                     String id = nodo.getAttribute("Value");
-                    Simbolo S = ts.getVariable(id, ambitoActual);
+                    Simbolo S = tabla.getVariable(id, ambitoActual);
                     if (S == null) {
                         String Line = nodo.getAttribute("Line");
                         String Column = nodo.getAttribute("Column");
@@ -582,10 +571,10 @@ public class SemanticParser {
                 case "LessOrEqual":
                 case "GreaterOrEqual":
                 case "Different": {
-                    String tipoActualBKP = tipoActual;
+                    String tipoActualTemp = tipoActual;
                     tipoActual = "";
                     comprobarTipos(nodo);
-                    tipoActual = tipoActualBKP;
+                    tipoActual = tipoActualTemp;
                     if (tipoFuncion.isEmpty()) {
                         tipoFuncion += "boolean";
                     } else {
@@ -596,10 +585,10 @@ public class SemanticParser {
                 case "AND":
                 case "OR":
                 case "NOT": {
-                    String tipoActualBKP = tipoActual;
+                    String tipoActualTemp = tipoActual;
                     tipoActual = "boolean";
                     recorrerArbol(nodo, "0", "0");
-                    tipoActual = tipoActualBKP;
+                    tipoActual = tipoActualTemp;
                     if (tipoFuncion.isEmpty()) {
                         tipoFuncion += "boolean";
                     } else {
@@ -612,12 +601,12 @@ public class SemanticParser {
                     tipoFuncion = "";
                     Element functionId = (Element) nodo.getFirstChild();
                     String id = functionId.getAttribute("Value");
-                    Simbolo S = ts.getFunction(id);
+                    Simbolo S = tabla.getFunction(id);
                     String tipoRetorno = "";
-                    String Linea = functionId.getAttribute("Line");
-                    String Columna = functionId.getAttribute("Column");
+                    String linea = functionId.getAttribute("Line");
+                    String columna = functionId.getAttribute("Column");
                     if (S == null) {
-                        throwNotFoundError(Linea, Columna, id);
+                        throwNotFoundError(linea, columna, id);
                     }
                     tipoRetorno = S.getTipo().split(" -> ")[1];
 
@@ -628,10 +617,10 @@ public class SemanticParser {
                         tipoFuncion = "void -> " + tipoRetorno;
                     }
                     if (!tipoActual.equals(tipoRetorno)) {
-                        throwIncompatibleTypeError(Linea, Columna, tipoRetorno);
+                        throwIncompatibleTypeError(linea, columna, tipoRetorno);
                     }
                     if (!tipoFuncion.equals(S.getTipo())) {
-                        throwFunctionArgsError(Linea, Columna, id);
+                        throwFunctionArgsError(linea, columna, id);
                     }
                     tipoFuncion = tipoBKP;
                     if (tipoFuncion.isEmpty()) {
@@ -648,54 +637,43 @@ public class SemanticParser {
 
     }
 
-    private static void throwNotFoundError(String Linea, String Columna, String ID) throws Exception {
-        String errorMessage = "(%s,%s) Error: Identificador no encontrado '%s'";
-        errorMessage = String.format(errorMessage, Linea, Columna, ID);
+    private static void throwNotFoundError(String linea, String columna, String ID) throws Exception {
+        String error = " Error: Identificador no encontrado '%s' line:%s,col:%s";
+        error = String.format(error, ID, linea, columna);
         if (debug) {
-            throw new Exception(errorMessage);
+            throw new Exception(error);
         } else {
-            System.err.println(errorMessage);
+            System.err.println(error);
         }
         numErrores++;
     }
 
-    private static void throwIncompatibleTypeError(String Linea, String Columna, String tipo) throws Exception {
-        String errorMessage = "";
+    private static void throwIncompatibleTypeError(String linea, String columna, String tipo) throws Exception {
+        String error = "";
         if (tipo.equals("void")) {
-            errorMessage = "(%s,%s) Error: Asignacion invalida, los procedimientos no retornan valor";
+            error = "Error: Asignacion invalida, los procedimientos no retornan valor line:%s,col:%s";
         } else {
-            errorMessage = "(%s,%s) Error: Tipos incompatibles, se esperaba '%s' pero se encontro '%s'";
+            error = "Error: Tipos incompatibles, se esperaba '%s' pero se encontro '%s' line:%s,col:%s";
         }
 
-        errorMessage = String.format(errorMessage, Linea, Columna, tipoActual, tipo);
-
-        if (debug) {
-            throw new Exception(errorMessage);
-        } else {
-            System.err.println(errorMessage);
-        }
+        error = String.format(error, tipoActual, tipo, linea, columna);
+        System.err.println(error);
         numErrores++;
     }
 
-    private static void throwFunctionArgsError(String Linea, String Columna, String id) throws Exception {
-        String errorMessage = "(%s,%s) Error: Función no encontrado '%s' con los parámetros proporcionado";
-        errorMessage = String.format(errorMessage, Linea, Columna, id);
-        if (debug) {
-            throw new Exception(errorMessage);
-        } else {
-            System.err.println(errorMessage);
-        }
+    private static void throwFunctionArgsError(String linea, String columna, String id) throws Exception {
+        String error = " Error: Función no encontrado '%s' con los parámetros proporcionado line:%s,col:%s";
+        error = String.format(error, id, linea, columna);
+
+        System.err.println(error);
+
         numErrores++;
     }
 
-    private static void throwIlegalExpresionError(String Linea, String Columna) throws Exception {
-        String errorMessage = "(%s,%s) Error: Expresión Ilegal";
-        errorMessage = String.format(errorMessage, Linea, Columna);
-        if (debug) {
-            throw new Exception(errorMessage);
-        } else {
-            System.err.println(errorMessage);
-        }
+    private static void throwIlegalExpresionError(String linea, String columna) throws Exception {
+        String error = " Error: Expresión Ilegal line:%s,col:%s)";
+        error = String.format(error, linea, columna);
+        System.err.println(error);
         numErrores++;
     }
 

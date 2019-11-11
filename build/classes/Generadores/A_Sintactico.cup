@@ -69,43 +69,37 @@ parser code {:
 :};
 
 action code {:
-    TablaSimbolos ts = new TablaSimbolos();
+    TablaSimbolos tabla = new TablaSimbolos();
     int offset = 0;
     String ambito = "main";
 
     /* Contruccion del arbol en XML */
 
     Document xmlDocument = null;    
-    Element nodoPadre = null; 
-
+    Element padre = null; 
+    //Crear el documento XML
     private void iniXML() {
         if (xmlDocument == null) {
             try {
                 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-                xmlDocument = docBuilder.newDocument();//Crear el documento XML
+                xmlDocument = docBuilder.newDocument();
             } catch (Exception e) {
-                System.err.println("El arbol tiene Error: " + e.getMessage());
+                System.err.println("Se han encontrado errores en el arbol: " + e.getMessage());
             }
         }
     }
 
     public void escribirXML() throws javax.xml.transform.TransformerConfigurationException, javax.xml.transform.TransformerException {
-        //Escribir el archivo XML         
-        xmlDocument.appendChild(nodoPadre);
+        xmlDocument.appendChild(padre);
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
         DOMSource origen = new DOMSource(xmlDocument);
-        StreamResult result = new StreamResult(new File("AST.xml"));
+        StreamResult result = new StreamResult(new File("ARBOL.xml"));
         transformer.transform(origen, result);
     }
 :}
 
-
-/* Terminals (tokens returned by the scanner). */
-//Functiones
-terminal Element  Write;
-terminal Element  Read;
 
 //Tipos de datos
 terminal Element  Array;
@@ -146,6 +140,12 @@ terminal Element  While;
 terminal Element  Repeat;
 terminal Element  Until;
 
+
+//Functiones
+terminal Element  Write;
+terminal Element  Read;
+
+
 //Otros
 terminal String   BracketAbrir;
 terminal String   BracketCerrar;
@@ -153,8 +153,6 @@ terminal String   Coma;
 terminal String   DosPuntos;
 terminal String   DosPuntosIgual;
 terminal String   Identificador;
-terminal String   LlaveAbrir;
-terminal String   LlaveCerrar;
 terminal String   ParentesisAbrir;
 terminal String   ParentesisCerrar;
 terminal String   Program;
@@ -163,12 +161,6 @@ terminal String   Function;
 terminal String   PuntoPunto;
 terminal String   Punto;
 terminal String   PuntoComa;
-
-/*Literales*/
-terminal String    LiteralEntero;
-terminal Character LiteralCaracter;
-terminal String    LiteralBoolean;
-terminal String    LiteralString;
 
 /* Non terminals */
 
@@ -204,8 +196,6 @@ nonterminal Element  vars;
 nonterminal Element  var;
 
 nonterminal Element  exprlist;
-nonterminal Element  exprLogical;
-nonterminal Element  exprOpLog;
 nonterminal Element  opRelacion;
 nonterminal Element  opArit;
 nonterminal Element  opUnario;
@@ -219,11 +209,16 @@ nonterminal Element  repeatstmt;
 nonterminal Element  blockstmt;
 nonterminal Element  writestmt;
 nonterminal Element  readstmt;
-
 nonterminal Element  integer;
 nonterminal Element  character;
 nonterminal Element  boolean;
 nonterminal Element  string;
+
+/*Literales*/
+terminal String    LiteralEntero;
+terminal Character LiteralCaracter;
+terminal String    LiteralBoolean;
+terminal String    LiteralString;
 
 
 /*-* Operator Precedences **/
@@ -238,17 +233,17 @@ precedence left error;
 program         ::= Program var:v PuntoComa block:b Punto
                 {:
                     iniXML();
-                    nodoPadre = xmlDocument.createElement("Program"); 
-                    if (v != null) { nodoPadre.appendChild(v); }
-                    if(b != null) { nodoPadre.appendChild(b); }
+                    padre = xmlDocument.createElement("Program"); 
+                    if (v != null) { padre.appendChild(v); }
+                    if(b != null) { padre.appendChild(b); }
                     escribirXML();
-                    SemanticParser.llenarTablaSimbolos(nodoPadre);
+                    AnalizadorTipo.llenarTablaSimbolos(padre);
                 :}
                 |   Program var:v1 ParentesisAbrir vars:vs ParentesisCerrar PuntoComa block:b Punto
                 {:
                     iniXML();
-                    nodoPadre = xmlDocument.createElement("Program"); 
-                    if (v1 != null) { nodoPadre.appendChild(v1); }
+                    padre = xmlDocument.createElement("Program"); 
+                    if (v1 != null) { padre.appendChild(v1); }
                     if (vs != null) { 
                         Element nPadre = xmlDocument.createElement("ProgramArgs");
                         ArrayList<Element> asd = new ArrayList();
@@ -263,11 +258,11 @@ program         ::= Program var:v PuntoComa block:b Punto
                         for (int i = 0; i < asd.size(); i++) {
                             nPadre.appendChild(asd.get(i));
                         }
-                        nodoPadre.appendChild(nPadre);
+                        padre.appendChild(nPadre);
                     }
-                    if(b != null) { nodoPadre.appendChild(b); }
+                    if(b != null) { padre.appendChild(b); }
                     escribirXML();
-                    SemanticParser.llenarTablaSimbolos(nodoPadre);
+                    AnalizadorTipo.llenarTablaSimbolos(padre);
                 :}
                 | error block Punto
                 | Program var:v PuntoComa block:b error
@@ -309,7 +304,7 @@ decls           ::= /* empty */ {: RESULT = null; :}
                         if (!ds.getNodeName().equals("Declarations")) {
                             nPadre.appendChild(ds);
                         }else{
-                            Element nodoPadre = xmlDocument.createElement("ProgramArgs");
+                            Element padre = xmlDocument.createElement("ProgramArgs");
                             ArrayList<Element> asd = new ArrayList();
                             NodeList temp = ds.getChildNodes();
                             for (int i = 0; i < temp.getLength(); i++) {
@@ -318,7 +313,7 @@ decls           ::= /* empty */ {: RESULT = null; :}
                             for (int i = 0; i < asd.size(); i++) {
                                 nPadre.appendChild(asd.get(i));
                             }
-                            nodoPadre.appendChild(nPadre);
+                            padre.appendChild(nPadre);
                         }
                        
                         RESULT = nPadre;
@@ -477,11 +472,10 @@ inlineArg       ::= Var vars:vs DosPuntos identtype:t
                             size = "4";
                         }
                         nType.setAttribute("Size",size);
-                        nType.setAttribute("isPointer","true");
                         nPadre.appendChild(nType);                        
                     }
                     RESULT = nPadre;
-                :}
+                :}  
                 |   vars:vs DosPuntos identtype:t 
                 {:
                     iniXML();
@@ -518,7 +512,6 @@ inlineArg       ::= Var vars:vs DosPuntos identtype:t
                             size = "4";
                         }
                         nType.setAttribute("Size",size);
-                        nType.setAttribute("isPointer","false");
                         nPadre.appendChild(nType);                        
                     }
                     RESULT = nPadre;

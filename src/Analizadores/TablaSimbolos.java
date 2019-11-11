@@ -13,18 +13,10 @@ import java.util.ArrayList;
 public class TablaSimbolos {
 
     public ArrayList<Simbolo> Simbolos = new ArrayList();
-    String formatHeader = "|%-20s |%-60s |%-15s |%-15s |%-15s |%-18s";
+    String formatHeader = "|%-20s |%-60s |%-15s |%-15s  |%-15s |%-18s";
     String formatBody = "|%-20s |%-60s |%-15s |%-15s |%-15s |%-18s";
 
-    public int Add(Simbolo S) throws Exception {
-        int itemIndex = this.getSymbolIndex(S);
-        if(itemIndex > 0) {
-            throw new Exception("Ya existe un elemento " + S.getId() + " en el ambito " + S.getAmbito());
-        } else {
-            Simbolos.add(S);
-        }
-        return Simbolos.size() -1;
-    }
+   
     
     public Simbolo getSimbolo(int index) throws Exception {
         if(index >= 0 && index < Simbolos.size()){
@@ -32,6 +24,16 @@ public class TablaSimbolos {
         } else {
             throw new Exception("Symbol not found");
         }
+    }
+
+     public int add(Simbolo S) throws Exception {
+        int itemIndex = this.getSymbolIndex(S);
+        if(itemIndex > 0) {
+            throw new Exception("Ya existe un elemento " + S.getId() + " en el ambito " + S.getAmbito());
+        } else {
+            Simbolos.add(S);
+        }
+        return Simbolos.size() -1;
     }
     
      public Simbolo getVariable(String Id) throws Exception {
@@ -94,7 +96,7 @@ public class TablaSimbolos {
                 "AMBITO",
                 "ES VARIABLE",
                 "ES PARAMETRO",
-                "POSICION MEMORIA"
+                "OFFSET"
         );
         System.out.println(headers);
         for (Simbolo S: Simbolos) {
@@ -105,7 +107,7 @@ public class TablaSimbolos {
                     S.getAmbito(),
                     String.valueOf(S.isVariable()),
                     String.valueOf(S.isParametro()),
-                    String.valueOf(S.getPosicionMemoria())
+                    String.valueOf(S.getOS())
             );
             System.out.println(output);
         }
