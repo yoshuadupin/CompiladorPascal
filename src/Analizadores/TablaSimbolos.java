@@ -6,6 +6,9 @@
 package Analizadores;
 
 import java.util.ArrayList;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 /**
  *
@@ -13,6 +16,7 @@ import java.util.ArrayList;
 public class TablaSimbolos {
 
     public ArrayList<Simbolo> Simbolos = new ArrayList();
+    JTable jt;
     String formatHeader = "|%-20s |%-60s |%-15s |%-15s  |%-15s |%-18s";
     String formatBody = "|%-20s |%-60s |%-15s |%-15s |%-15s |%-18s";
 
@@ -89,7 +93,7 @@ public class TablaSimbolos {
     
     @Override
     public String toString() {
-        String headers = String.format(
+        /*String headers = String.format(
                 formatHeader,
                 "IDENTIFICADOR",
                 "TIPO",
@@ -110,7 +114,38 @@ public class TablaSimbolos {
                     String.valueOf(S.getOS())
             );
             System.out.println(output);
+        }*/
+        JFrame f = new JFrame(); 
+        String[] headers = {
+                "IDENTIFICADOR",
+                "TIPO",
+                "AMBITO",
+                "ES VARIABLE",
+                "ES PARAMETRO",
+                "OFFSET"};
+        int rowcount = 0;
+        for (Simbolo S: Simbolos) {
+           rowcount++;
+        }//for de filas de la tabla
+        String[][] body = new String[rowcount][6];
+        int x = 0;
+
+        for (Simbolo S: Simbolos) {
+            int y = 0;
+            body[x][y] = S.getId();
+            body[x][y+1] = S.getTipo();
+            body[x][y+2] = S.getAmbito();
+            body[x][y+3] = String.valueOf(S.isVariable());
+            body[x][y+4] = String.valueOf(S.isParametro());
+            body[x][y+5] = String.valueOf(S.getOS());
+            x++;
+            //yabla[x][y] = {{"" + S.getId(), "" + S.getTipo(), "" + S.getAmbito(), "" + String.valueOf(S.isVariable()), "" + String.valueOf(S.isParametro()), "" + String.valueOf(S.getPosicionMemoria())}};
         }
+        jt = new JTable(body,headers);
+        JScrollPane sp=new JScrollPane(jt);
+        f.add(sp);
+        f.setSize(800,300);    
+        f.setVisible(true);
 
         return "";
     }

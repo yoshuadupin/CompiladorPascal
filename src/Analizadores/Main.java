@@ -24,8 +24,6 @@ public class Main extends javax.swing.JFrame {
      * Creates new form Main
      */
     public Main() {
-        LexerGenerator.Main();
-        CupGenerator.Main();
         initComponents();
     }
 

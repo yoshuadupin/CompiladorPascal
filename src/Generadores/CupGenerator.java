@@ -12,7 +12,7 @@ import java.io.File;
  * @author jorgecaballero
  */
 public class CupGenerator {
-    public static void Main() {
+    public static void main(String[] args) {
        String params[] = new String[5];
         
         params[0] = "-destdir";
