@@ -34,7 +34,7 @@ public class PascalCompiler {
         CupGenerator.Main();
         Reader reader;
         try {
-            reader = new BufferedReader(new FileReader("./src/Pruebas/bueno6.pas"));
+            reader = new BufferedReader(new FileReader("./src/Pruebas/bueno3.pas"));
             Lexer lexer = new Lexer(reader);
                        
             parser cupParser = new parser(lexer);
