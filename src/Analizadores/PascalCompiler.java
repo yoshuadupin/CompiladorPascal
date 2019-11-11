@@ -18,6 +18,7 @@ import java_cup.runtime.*;
 import jflex.*;
 import Generadores.*;
 import java.io.Reader;
+import javax.swing.JFileChooser;
 
 /**
  *
@@ -30,11 +31,15 @@ public class PascalCompiler {
      */
     public static void main(String[] args) throws InterruptedException {
         // TODO code application logic here
-        LexerGenerator.main(args);
+                LexerGenerator.main(args);
         CupGenerator.main(args);
         Reader reader;
+        JFileChooser lector;
         try {
-            reader = new BufferedReader(new FileReader("./src/Pruebas/bueno6.pas"));
+            //reader = new BufferedReader(new FileReader("./src/Pruebas/bueno6.pas"));
+            lector = new JFileChooser();
+            lector.showOpenDialog(lector);
+            reader = new BufferedReader(new FileReader(lector.getSelectedFile().getPath()));
             Lexer lexer = new Lexer(reader);
                        
             parser cupParser = new parser(lexer);
