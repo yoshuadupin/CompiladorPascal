@@ -30,8 +30,8 @@ public class PascalCompiler {
      */
     public static void main(String[] args) throws InterruptedException {
         // TODO code application logic here
-        LexerGenerator.main(args);
-        CupGenerator.main(args);
+        LexerGenerator.Main();
+        CupGenerator.Main();
         Reader reader;
         try {
             reader = new BufferedReader(new FileReader("./src/Pruebas/bueno6.pas"));

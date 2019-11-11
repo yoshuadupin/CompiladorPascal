@@ -12,7 +12,7 @@ import java.io.File;
  * @author jorgecaballero
  */
 public class LexerGenerator {
-    public static void main(String[] args) {
+    public static void Main() {
         String paramsLexer[] = new String[3];
         paramsLexer[0] = "-d";
         paramsLexer[1] = "src/Analizadores/";

@@ -212,7 +212,7 @@ public class AnalizadorTipo {
                     break;
                 }
                 case "FunctionCall": {
-                    String tipoBKP = tipoFuncion;
+                    String tipoTemp = tipoFuncion;
                     tipoFuncion = "";
                     Element functionId = (Element) nodo.getFirstChild();
                     String id = functionId.getAttribute("Value");
@@ -237,7 +237,7 @@ public class AnalizadorTipo {
                     if (!tipoFuncion.equals(S.getTipo())) {
                         throwFunctionArgsError(linea, columna, id);
                     }
-                    tipoFuncion = tipoBKP;
+                    tipoFuncion = tipoTemp;
 
                     break;
                 }
@@ -277,10 +277,10 @@ public class AnalizadorTipo {
                 case "IfStatement": {
                     linea = nodo.getAttribute("Line");
                     columna = nodo.getAttribute("Column");
-                    String tipoBKP = tipoActual;
+                    String tipoTemp = tipoActual;
                     tipoActual = "boolean";
                     recorrerArbol(nodo, linea, columna);
-                    tipoActual = tipoBKP;
+                    tipoActual = tipoTemp;
                     break;
                 }
                 case "ARRAY": {
@@ -295,7 +295,7 @@ public class AnalizadorTipo {
                         throwIlegalExpresionError(linea, columna);
                     } else {
                         String tipo = S.getTipo().split("\\.")[1];
-                        String tipoBKP = tipoActual;
+                        String tipoTemp = tipoActual;
                         if (tipoActual.isEmpty()) {
                             System.out.println("1");
                             tipoActual = "integer";
@@ -305,7 +305,7 @@ public class AnalizadorTipo {
                             System.out.println("2");
                             tipoActual = "integer";
                             comprobarTipos(nodo);
-                            tipoActual = tipoBKP;
+                            tipoActual = tipoTemp;
                         } else {
                             throwIncompatibleTypeError(linea, columna, tipo);
                         }
@@ -403,7 +403,7 @@ public class AnalizadorTipo {
                         throwIlegalExpresionError(linea, columna);
                     } else {
                         String tipo = S.getTipo().split("\\.")[1];
-                        String tipoBKP = tipoActual;
+                        String tipoTemp = tipoActual;
                         if (tipoActual.isEmpty()) {
                             tipoActual = "integer";
                             comprobarTipos(nodo);
@@ -414,7 +414,7 @@ public class AnalizadorTipo {
                         } else {
                             throwIncompatibleTypeError(linea, columna, tipo);
                         }
-                        tipoActual = tipoBKP;
+                        tipoActual = tipoTemp;
                     }
                     break;
                 }
@@ -482,7 +482,7 @@ public class AnalizadorTipo {
                         throwIlegalExpresionError(linea, columna);
                     } else {
                         String tipo = S.getTipo().split("\\.")[1];
-                        String tipoBKP = tipoActual;
+                        String tipoTemp = tipoActual;
                         boolean isInteger = tipo.equals("integer");
                         if (tipoActual.isEmpty()) {
                             tipoActual = "integer";
@@ -494,7 +494,7 @@ public class AnalizadorTipo {
                         } else {
                             throwIncompatibleTypeError(linea, columna, tipo);
                         }
-                        tipoActual = tipoBKP;
+                        tipoActual = tipoTemp;
                     }
                     break;
                 }
@@ -541,10 +541,10 @@ public class AnalizadorTipo {
                 case "Minus":
                 case "Times":
                 case "Div": {
-                    String tipoBKP = tipoActual;
+                    String tipoTemp = tipoActual;
                     tipoActual = "integer";
                     comprobarTipos(nodo);
-                    tipoActual = tipoBKP;
+                    tipoActual = tipoTemp;
                     if (tipoFuncion.isEmpty()) {
                         tipoFuncion += "integer";
                     } else {
@@ -553,7 +553,7 @@ public class AnalizadorTipo {
                     break;
                 }
                 case "Plus": {
-                    String tipoBKP = tipoActual;
+                    String tipoTemp = tipoActual;
                     tipoActual = "";
                     comprobarTipos(nodo);
 
@@ -562,7 +562,7 @@ public class AnalizadorTipo {
                     } else {
                         tipoFuncion += "X" + tipoActual;
                     }
-                    tipoActual = tipoBKP;
+                    tipoActual = tipoTemp;
                     break;
                 }
                 case "GreaterThan":
@@ -597,7 +597,7 @@ public class AnalizadorTipo {
                     break;
                 }
                 case "FunctionCall": {
-                    String tipoBKP = tipoFuncion;
+                    String tipoTemp = tipoFuncion;
                     tipoFuncion = "";
                     Element functionId = (Element) nodo.getFirstChild();
                     String id = functionId.getAttribute("Value");
@@ -622,7 +622,7 @@ public class AnalizadorTipo {
                     if (!tipoFuncion.equals(S.getTipo())) {
                         throwFunctionArgsError(linea, columna, id);
                     }
-                    tipoFuncion = tipoBKP;
+                    tipoFuncion = tipoTemp;
                     if (tipoFuncion.isEmpty()) {
                         tipoFuncion += tipoRetorno;
                     } else {

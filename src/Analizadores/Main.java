@@ -5,6 +5,15 @@
  */
 package Analizadores;
 
+import Generadores.CupGenerator;
+import Generadores.LexerGenerator;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author UNICOMER
@@ -15,6 +24,8 @@ public class Main extends javax.swing.JFrame {
      * Creates new form Main
      */
     public Main() {
+        LexerGenerator.Main();
+        CupGenerator.Main();
         initComponents();
     }
 
@@ -35,6 +46,11 @@ public class Main extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jButton1.setText("Elegir un archivo");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
 
         jButton2.setText("Compilar");
 
@@ -74,6 +90,41 @@ public class Main extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+
+        String aux = "";
+        String texto = "";
+        try {
+            /**
+             * llamamos el metodo que permite cargar la ventana
+             */
+            JFileChooser file = new JFileChooser("./src/Pruebas/");
+            file.showOpenDialog(this);
+            /**
+             * abrimos el archivo seleccionado
+             */
+            File abre = file.getSelectedFile();
+
+            /**
+             * recorremos el archivo, lo leemos para plasmarlo en el area de texto
+             */
+            if (abre != null) {
+                FileReader archivos = new FileReader(abre);
+                BufferedReader lee = new BufferedReader(archivos);
+                while ((aux = lee.readLine()) != null) {
+                    texto += aux + "\n";
+                }
+                lee.close();
+            }
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, ex + ""
+                    + "\nNo se ha encontrado el archivo",
+                    "ADVERTENCIA!!!", JOptionPane.WARNING_MESSAGE);
+        }
+
+// TODO add your handling code here:
+    }//GEN-LAST:event_jButton1MouseClicked
 
     /**
      * @param args the command line arguments
