@@ -93,7 +93,7 @@ public class TablaSimbolos {
     
     @Override
     public String toString() {
-        /*String headers = String.format(
+        String headers = String.format(
                 formatHeader,
                 "IDENTIFICADOR",
                 "TIPO",
@@ -114,7 +114,8 @@ public class TablaSimbolos {
                     String.valueOf(S.getOS())
             );
             System.out.println(output);
-        }*/
+        }
+        /*
         JFrame f = new JFrame(); 
         String[] headers = {
                 "IDENTIFICADOR",
@@ -146,7 +147,7 @@ public class TablaSimbolos {
         f.add(sp);
         f.setSize(800,300);    
         f.setVisible(true);
-
+        */
         return "";
     }
 }

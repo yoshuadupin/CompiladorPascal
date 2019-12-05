@@ -5,6 +5,8 @@
  */
 package Analizadores;
 
+import CodigoIntermedio.CodigoIntermedio;
+import CodigoIntermedio.Cuadruplo;
 import java.util.ArrayList;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -333,6 +335,10 @@ public class AnalizadorTipo {
         } else {
             Thread.sleep(1000);
             tabla.toString();
+            System.out.println("---------------------------------------------------");
+            CodigoIntermedio ci = new CodigoIntermedio(tabla);
+            ci.recorrer(nodoPadre);
+            System.out.println(ci);
         }
         return tabla;
     }
