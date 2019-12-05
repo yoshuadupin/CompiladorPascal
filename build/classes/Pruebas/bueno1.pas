@@ -6,7 +6,12 @@ var
 
 begin
   bol:= (3+2)>1;
+  
 
   begin
+    if bol=true then
+     writeln('Changes discarded !');
+    else
+     writeln('Changes saved !');
   end;
 end.

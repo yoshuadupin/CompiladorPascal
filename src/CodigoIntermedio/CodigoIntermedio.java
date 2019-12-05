@@ -56,7 +56,8 @@ public class CodigoIntermedio {
                     break;
                 }
                 case "IfStatement": {
-                    recorrer(nodo);
+
+                    cuadIf(nodo);
                     break;
                 }
                 case "WhileStatement": {
@@ -96,7 +97,7 @@ public class CodigoIntermedio {
                 case "LessOrEqual":
                 case "LessThan":
                 case "Different": {
-                    recorrer(nodo);
+                    cuadExpresiones(nodo);
                     break;
                 }
                 case "Minus":
@@ -441,6 +442,76 @@ public class CodigoIntermedio {
 
     }
 
+    private void cuadIf(Element nodo) throws Exception {
+
+        NodeList lista = nodo.getChildNodes();
+        Element expression = (Element) lista.item(0);
+        Element body = (Element) lista.item(1);
+        Element elseIf = null;
+        String elseIfName = "";
+
+        String verdaderaE = etiqNueva();
+        String falsaE = etiqNueva();
+        String siguienteE = nodo.getAttribute("Siguiente");
+        if (lista.getLength() > 2) {
+            elseIf = (Element) lista.item(2);
+            elseIfName = elseIf.getNodeName();
+        }
+        if (expression.getNodeName().equals("Literal") || expression.getNodeName().equals("ID")) {
+            String newTemp = nuevoTemp();
+            cuadruplos.gen(":=", expression.getAttribute("Value"), newTemp);
+            String temp = nuevoTemp();
+            cuadruplos.gen(":=", "1", temp);
+            //expression.setAttribute("listaV", this.crearLista(Cuadruplos.getSize()));
+            //expression.setAttribute("listaF", this.crearLista(Cuadruplos.getSize() + 1));
+
+            cuadruplos.gen("if=", newTemp, temp, "@" + verdaderaE);
+            cuadruplos.genGOTO("@" + falsaE);
+        } else {
+            expression.setAttribute("Verdadera", verdaderaE);
+            expression.setAttribute("Falsa", falsaE);
+            cuadRelacional(expression);
+        }
+
+        cuadruplos.genEtiq(verdaderaE);
+        body.setAttribute("Siguiente", siguienteE);
+
+        recorrer(body);
+
+        cuadruplos.genGOTO("@" + siguienteE);
+        cuadruplos.genEtiq("@" + falsaE);
+        /*
+        int N1 = cuadruplos.genGOTO("@");
+        nodo.setAttribute("listaF", crearLista(N1));
+        int M2 = cuadruplos.getSize();
+
+        this.completa(M1, expression.getAttribute("listaV"));
+        this.completa(M2, expression.getAttribute("listaF"));
+         */
+        switch (elseIfName) {
+            case "IfStatement": {
+                elseIf.setAttribute("Siguiente", siguienteE);
+                cuadIf(elseIf);
+                /*
+                String listaF = elseIf.getAttribute("listaF");
+                nodo.setAttribute("listaF", fusiona(listaF, nodo.getAttribute("listaF")));
+                 */
+                break;
+            }
+            case "Body": {
+                elseIf.setAttribute("Siguiente", siguienteE);
+                recorrer(elseIf);
+                int M3 = Cuadruplos.GEN_GOTO("@");
+                String listaF = nodo.getAttribute("listaF");
+                nodo.setAttribute("listaF", fusiona(listaF, this.crearLista(M3)));
+                break;
+            }
+        }
+
+        int endOfIf = Cuadruplos.getSize();
+        this.completa(endOfIf, nodo.getAttribute("listaF"));
+    }
+
     private void cuadNot(Element nodo) throws Exception {
 
         Element arg1 = (Element) nodo.getFirstChild();
@@ -666,14 +737,6 @@ public class CodigoIntermedio {
         }
     }
 
-    public static String getTamañoTipo(String tipo) {
-        if (tipo.equals("char") || tipo.equals("boolean")) {
-            return "1";
-        } else {
-            return "4";
-        }
-    }
-
     public void cuadAritmetico(Element nodo) throws Exception {
         String nodeName = nodo.getNodeName();
 
@@ -845,6 +908,14 @@ public class CodigoIntermedio {
     @Override
     public String toString() {
         return cuadruplos.toString();
+    }
+
+    public static String getTamañoTipo(String tipo) {
+        if (tipo.equals("char") || tipo.equals("boolean")) {
+            return "1";
+        } else {
+            return "4";
+        }
     }
 
 }
