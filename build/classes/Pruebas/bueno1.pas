@@ -5,13 +5,10 @@ var
     vector:array[2..10] of integer;
 
 begin
-  bol:= (3+2)>1;
   
-
-  begin
-    if bol=true then
-     writeln('Changes discarded !');
-    else
-     writeln('Changes saved !');
-  end;
+    bol := false;
+  For i:=0 to 10 do begin
+        write('Voy por el ');
+        writeln(x);
+    end;
 end.

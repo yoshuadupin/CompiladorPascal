@@ -56,5 +56,14 @@ public class TablaCuadruplos {
 
         return acum;
     }
+    public Cuadruplo getCuad(int index){
+        return cuadruplos.get(index);
+    }
+    
+    public int getTam(){
+        return cuadruplos.size();
+    }
+    
+    
 
 }
