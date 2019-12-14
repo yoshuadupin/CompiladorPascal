@@ -7,6 +7,7 @@ package CodigoIntermedio;
 
 import Analizadores.Simbolo;
 import Analizadores.TablaSimbolos;
+import java.util.ArrayList;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -28,19 +29,26 @@ public class CodigoIntermedio {
     }
 
     public void recorrer(Element rootNode) throws Exception {
+        if (rootNode.getParentNode().getNodeName().equals("#document")) {
+            rootNode.setAttribute("Siguiente", etiqNueva());
+        }
         NodeList hijos = rootNode.getChildNodes();
         for (int i = 0; i < hijos.getLength(); i++) {
             Element nodo = (Element) hijos.item(i);
             String nodeName = nodo.getNodeName();
-
+            String siguiente = rootNode.getAttribute("Siguiente");
+            nodo.setAttribute("Siguiente", siguiente);
             switch (nodeName) {
 
                 case "ProcedureDeclaration": {
+                    cuadruplos.genEtiq(nodo.getAttribute("ID"));
                     recorrer(nodo);
+                    cuadruplos.gen("RET", "", "", "");
                     break;
                 }
                 case "FunctionDeclaration": {
-                    recorrer(nodo);
+                    cuadruplos.genEtiq(nodo.getAttribute("ID"));
+                    this.recorrer(nodo);
                     break;
                 }
                 case "Body": {
@@ -52,23 +60,25 @@ public class CodigoIntermedio {
                     break;
                 }
                 case "FunctionCall": {
-                    recorrer(nodo);
+                    cuadruploFuncCall(nodo);
                     break;
                 }
                 case "IfStatement": {
+
                     cuadIf(nodo);
                     break;
                 }
                 case "WhileStatement": {
+
                     cuadWhile(nodo);
                     break;
                 }
                 case "RepeatStatement": {
-                    recorrer(nodo);
+                    cuadRepeat(nodo);
                     break;
                 }
                 case "ForStatement": {
-                    recorrer(nodo);
+                    cuadFor(nodo);
                     break;
                 }
                 case "ReadStatement": {
@@ -153,6 +163,10 @@ public class CodigoIntermedio {
             }
         }
 
+        if (rootNode.getParentNode().getNodeName().equals("#document")) {
+            cuadruplos.genEtiq("$" + rootNode.getAttribute("Siguiente"));
+        }
+
     }
 
     private void cuadRelacional(Element node) throws Exception {
@@ -201,16 +215,16 @@ public class CodigoIntermedio {
                 String arg1Value = arg1.getAttribute("Value");
                 String verdadera = arg1.getAttribute("Verdadera");
                 String falsa = arg1.getAttribute("Falsa");
-                cuadruplos.gen("if=", arg1Value, "1", "@" + falsa);
-                cuadruplos.genGOTO("@" + verdadera);
+                cuadruplos.gen("if=", arg1Value, "1", "$" + falsa);
+                cuadruplos.genGOTO("$" + verdadera);
                 break;
             }
             case "Literal": {
                 String arg1Value = arg1.getAttribute("Value");
                 String verdadera = arg1.getAttribute("Verdadera");
                 String falsa = arg1.getAttribute("Falsa");
-                cuadruplos.gen("if=", arg1Value, "1", "@" + falsa);
-                cuadruplos.genGOTO("@" + verdadera);
+                cuadruplos.gen("if=", arg1Value, "1", "$" + falsa);
+                cuadruplos.genGOTO("$" + verdadera);
                 break;
             }
             case "ARRAY": {
@@ -219,8 +233,8 @@ public class CodigoIntermedio {
                 String falsa = arg1.getAttribute("Falsa");
 
                 String temp = getTemp();
-                cuadruplos.gen("if=", temp, "1", "@" + falsa);
-                cuadruplos.genGOTO("@" + verdadera);
+                cuadruplos.gen("if=", temp, "1", "$" + falsa);
+                cuadruplos.genGOTO("$" + verdadera);
                 break;
             }
             case "GreaterThan":
@@ -246,16 +260,16 @@ public class CodigoIntermedio {
                 String arg2Value = arg2.getAttribute("Value");
                 String verdadera = arg2.getAttribute("Verdadera");
                 String falsa = arg2.getAttribute("Falsa");
-                cuadruplos.gen("if=", arg2Value, "1", "@" + verdadera);
-                cuadruplos.genGOTO("@" + falsa);
+                cuadruplos.gen("if=", arg2Value, "1", "$" + verdadera);
+                cuadruplos.genGOTO("$" + falsa);
                 break;
             }
             case "Literal": {
                 String arg2Value = arg2.getAttribute("Value");
                 String verdadera = arg2.getAttribute("Verdadera");
                 String falsa = arg2.getAttribute("Falsa");
-                cuadruplos.gen("if=", arg2Value, "1", "@" + verdadera);
-                cuadruplos.genGOTO("@" + falsa);
+                cuadruplos.gen("if=", arg2Value, "1", "$" + verdadera);
+                cuadruplos.genGOTO("$" + falsa);
                 break;
             }
             case "ARRAY": {
@@ -263,8 +277,8 @@ public class CodigoIntermedio {
                 String verdadera = arg1.getAttribute("Verdadera");
                 String falsa = arg1.getAttribute("Falsa");
                 String temp = getTemp();
-                cuadruplos.gen("if=", temp, "1", "@" + verdadera);
-                cuadruplos.genGOTO("@" + falsa);
+                cuadruplos.gen("if=", temp, "1", "$" + verdadera);
+                cuadruplos.genGOTO("$" + falsa);
                 break;
             }
             case "GreaterThan":
@@ -298,26 +312,20 @@ public class CodigoIntermedio {
         arg1.setAttribute("Falsa", falsaE);
         switch (arg1Name) {
             case "ID": {
-                /*
-                String arg1Value = arg1.getAttribute("Value");
-                arg1.setAttribute("listaV", crearLista(cuadruplos.getSize()));
-                arg1.setAttribute("listaF", crearLista(cuadruplos.getSize() + 1));
-                cuadruplos.gen("if=", arg1Value, "1", "@");
-                cuadruplos.GEN_GOTO("@");
-                 */
+
                 String arg1Value = arg1.getAttribute("Value");
                 String verdadera = arg1.getAttribute("Verdadera");
                 String falsa = arg1.getAttribute("Falsa");
-                cuadruplos.gen("if=", arg1Value, "1", "@" + verdadera);
-                cuadruplos.genGOTO("@" + falsa);
+                cuadruplos.gen("if=", arg1Value, "1", "$" + verdadera);
+                cuadruplos.genGOTO("$" + falsa);
                 break;
             }
             case "Literal": {
                 String arg1Value = arg1.getAttribute("Value");
                 String verdadera = arg1.getAttribute("Verdadera");
                 String falsa = arg1.getAttribute("Falsa");
-                cuadruplos.gen("if=", arg1Value, "1", "@" + verdadera);
-                cuadruplos.genGOTO("@" + falsa);
+                cuadruplos.gen("if=", arg1Value, "1", "$" + verdadera);
+                cuadruplos.genGOTO("$" + falsa);
                 break;
             }
             case "ARRAY": {
@@ -326,8 +334,8 @@ public class CodigoIntermedio {
                 String falsa = arg1.getAttribute("Falsa");
 
                 String temp = getTemp();
-                cuadruplos.gen("if=", temp, "1", "@" + verdadera);
-                cuadruplos.genGOTO("@" + falsa);
+                cuadruplos.gen("if=", temp, "1", "$" + verdadera);
+                cuadruplos.genGOTO("$" + falsa);
 
                 break;
             }
@@ -356,8 +364,8 @@ public class CodigoIntermedio {
                 String arg2Value = arg2.getAttribute("Value");
                 String verdadera = arg2.getAttribute("Verdadera");
                 String falsa = arg2.getAttribute("Falsa");
-                cuadruplos.gen("if=", arg2Value, "1", "@" + verdadera);
-                cuadruplos.genGOTO("@" + falsa);
+                cuadruplos.gen("if=", arg2Value, "1", "$" + verdadera);
+                cuadruplos.genGOTO("$" + falsa);
                 break;
             }
             case "Literal": {
@@ -365,8 +373,8 @@ public class CodigoIntermedio {
                 String arg2Value = arg2.getAttribute("Value");
                 String verdadera = arg2.getAttribute("Verdadera");
                 String falsa = arg2.getAttribute("Falsa");
-                cuadruplos.gen("if=", arg2Value, "1", "@" + verdadera);
-                cuadruplos.genGOTO("@" + falsa);
+                cuadruplos.gen("if=", arg2Value, "1", "$" + verdadera);
+                cuadruplos.genGOTO("$" + falsa);
                 break;
             }
             case "ARRAY": {
@@ -374,8 +382,8 @@ public class CodigoIntermedio {
                 String verdadera = arg1.getAttribute("Verdadera");
                 String falsa = arg1.getAttribute("Falsa");
                 String temp = getTemp();
-                cuadruplos.gen("if=", temp, "1", "@" + verdadera);
-                cuadruplos.genGOTO("@" + falsa);
+                cuadruplos.gen("if=", temp, "1", "$" + verdadera);
+                cuadruplos.genGOTO("$" + falsa);
 
                 break;
             }
@@ -396,7 +404,7 @@ public class CodigoIntermedio {
         }
     }
 
-    private void cuadruploFor(Element nodo) throws Exception {
+    private void cuadFor(Element nodo) throws Exception {
         NodeList lista = nodo.getChildNodes();
         Element assignment = (Element) lista.item(0);
         Element end = (Element) lista.item(1);
@@ -406,9 +414,8 @@ public class CodigoIntermedio {
         Cuadruplo cuad = cuadruplos.getCuad(cuadruplos.cuadruplos.size() - 1);
         String iterator = cuad.resultado;
 
-        //int M1 = Cuadruplos.getSize();
         String comienzo = etiqNueva();
-        cuadruplos.genEtiq("@" + comienzo);
+        cuadruplos.genEtiq("$" + comienzo);
         String siguienteE = nodo.getAttribute("Siguiente");
         String verdaderaE = etiqNueva();
         String siguienteS1 = etiqNueva();
@@ -423,14 +430,9 @@ public class CodigoIntermedio {
                 String idValex = end.getAttribute("Value");
                 String temp2 = nuevoTemp();
                 cuadruplos.gen(":=", idValex, temp2);
-                /*
-                String listaV = this.crearLista(Cuadruplos.getSize());
-                String listaF = this.crearLista(Cuadruplos.getSize() + 1);
-                nodo.setAttribute("listaV", listaV);
-                nodo.setAttribute("listaF", listaF);
-                 */
-                cuadruplos.gen("if<=", temp1, temp2, "@" + verdaderaE);
-                cuadruplos.genGOTO("@" + siguienteE);
+
+                cuadruplos.gen("if<=", temp1, temp2, "$" + verdaderaE);
+                cuadruplos.genGOTO("$" + siguienteE);
                 break;
             }
             case "ARRAY": {
@@ -438,14 +440,9 @@ public class CodigoIntermedio {
                 String temp = getTemp();
                 String temp1 = nuevoTemp();
                 cuadruplos.gen(":=", iterator, temp1);
-                /*
-                String listaV = this.crearLista(Cuadruplos.getSize());
-                String listaF = this.crearLista(Cuadruplos.getSize() + 1);
-                nodo.setAttribute("listaV", listaV);
-                nodo.setAttribute("listaF", listaF);
-                 */
-                cuadruplos.gen("if<=", temp1, temp, "@" + verdaderaE);
-                cuadruplos.genGOTO("@" + siguienteE);
+
+                cuadruplos.gen("if<=", temp1, temp, "$" + verdaderaE);
+                cuadruplos.genGOTO("$" + siguienteE);
                 break;
             }
             default: {
@@ -453,36 +450,26 @@ public class CodigoIntermedio {
                 String temp = this.getTemp();
                 String temp1 = nuevoTemp();
                 cuadruplos.gen(":=", iterator, temp1);
-                /*
-                String listaV = this.crearLista(Cuadruplos.getSize());
-                String listaF = this.crearLista(Cuadruplos.getSize() + 1);
-                nodo.setAttribute("listaV", listaV);
-                nodo.setAttribute("listaF", listaF);
-                 */
-                cuadruplos.gen("if<=", temp1, temp, "@" + verdaderaE);
-                cuadruplos.genGOTO("@" + siguienteE);
+
+                cuadruplos.gen("if<=", temp1, temp, "$" + verdaderaE);
+                cuadruplos.genGOTO("$" + siguienteE);
                 break;
             }
         }
-        cuadruplos.genEtiq("@" + verdaderaE);
+        cuadruplos.genEtiq("$" + verdaderaE);
 
-        //int M2 = Cuadruplos.getSize();
         recorrer(body);
-        cuadruplos.genEtiq("@" + siguienteS1);
+        cuadruplos.genEtiq("$" + siguienteS1);
         String temp1 = nuevoTemp();
         cuadruplos.gen(":=", iterator, temp1);
         String temp2 = nuevoTemp();
         cuadruplos.gen(":=", "1", temp2);
 
         cuadruplos.gen("+", temp1, temp2, iterator);
-        cuadruplos.genGOTO("@" + comienzo);
-        //int M3 = Cuadruplos.getSize();
-
-        //this.completa(M2, nodo.getAttribute("listaV"));
-        //this.completa(M3, nodo.getAttribute("listaF"));
+        cuadruplos.genGOTO("$" + comienzo);
     }
 
-    private void cuadruploRepeat(Element nodo) throws Exception {
+    private void cuadRepeat(Element nodo) throws Exception {
 
         Element body = (Element) nodo.getFirstChild();
         Element expression = (Element) nodo.getLastChild();
@@ -496,29 +483,29 @@ public class CodigoIntermedio {
 
         cuadruplos.genEtiq(falsaE);
         recorrer(body);
-        cuadruplos.genEtiq("@" + siguienteS1);
+        cuadruplos.genEtiq("$" + siguienteS1);
 
         expression.setAttribute("Falsa", falsaE);
         expression.setAttribute("Verdadera", verdaderaE);
         switch (nodeName) {
             case "ID": {
                 String arg1Value = expression.getAttribute("Value");
-                cuadruplos.gen("if=", arg1Value, "1", "@" + verdaderaE);
-                cuadruplos.genGOTO("@" + falsaE);
+                cuadruplos.gen("if=", arg1Value, "1", "$" + verdaderaE);
+                cuadruplos.genGOTO("$" + falsaE);
                 break;
             }
             case "Literal": {
                 String arg1Value = expression.getAttribute("Value");
-                cuadruplos.gen("if=", arg1Value, "1", "@" + verdaderaE);
-                cuadruplos.genGOTO("@" + falsaE);
+                cuadruplos.gen("if=", arg1Value, "1", "$" + verdaderaE);
+                cuadruplos.genGOTO("$" + falsaE);
 
                 break;
             }
             case "ARRAY": {
                 cuadArreglo(expression);
                 String temp = getTemp();
-                cuadruplos.gen("if=", temp, "1", "@" + verdaderaE);
-                cuadruplos.genGOTO("@" + falsaE);
+                cuadruplos.gen("if=", temp, "1", "$" + verdaderaE);
+                cuadruplos.genGOTO("$" + falsaE);
                 break;
             }
             default: {
@@ -539,38 +526,29 @@ public class CodigoIntermedio {
         String verdaderaE = etiqNueva();
         String falsaE = nodo.getAttribute("Siguiente");
 
-        cuadruplos.genEtiq("@" + comienzo);
-        //int M1 = cuadruplos.getSize();
+        cuadruplos.genEtiq("$" + comienzo);
+
         switch (nodeName) {
             case "ID": {
                 String arg1Value = expression.getAttribute("Value");
-                /*
-                expression.setAttribute("listaV", crearLista(Cuadruplos.getSize()));
-                expression.setAttribute("listaF", crearLista(Cuadruplos.getSize() + 1));
-                 */
-                cuadruplos.gen("if=", arg1Value, "1", "@" + verdaderaE);
-                cuadruplos.genGOTO("@" + falsaE);
+
+                cuadruplos.gen("if=", arg1Value, "1", "$" + verdaderaE);
+                cuadruplos.genGOTO("$" + falsaE);
                 break;
             }
             case "Literal": {
                 String arg1Value = expression.getAttribute("Value");
-                /*
-                expression.setAttribute("listaV", crearLista(Cuadruplos.getSize()));
-                expression.setAttribute("listaF", crearLista(Cuadruplos.getSize() + 1));
-                 */
-                cuadruplos.gen("if=", arg1Value, "1", "@" + verdaderaE);
-                cuadruplos.genGOTO("@" + falsaE);
+
+                cuadruplos.gen("if=", arg1Value, "1", "$" + verdaderaE);
+                cuadruplos.genGOTO("$" + falsaE);
                 break;
             }
             case "ARRAY": {
                 cuadArreglo(expression);
                 String temp = getTemp();
-                /*
-                expression.setAttribute("listaV", crearLista(Cuadruplos.getSize()));
-                expression.setAttribute("listaF", crearLista(Cuadruplos.getSize() + 1));
-                 */
-                cuadruplos.gen("if=", temp, "1", "@" + verdaderaE);
-                cuadruplos.genGOTO("@" + falsaE);
+
+                cuadruplos.gen("if=", temp, "1", "$" + verdaderaE);
+                cuadruplos.genGOTO("$" + falsaE);
                 break;
             }
             default: {
@@ -580,17 +558,12 @@ public class CodigoIntermedio {
                 break;
             }
         }
-        cuadruplos.genEtiq("@" + verdaderaE);
-        //int M2 = Cuadruplos.getSize();
+        cuadruplos.genEtiq("$" + verdaderaE);
         body.setAttribute("Siguiente", comienzo);
+
         recorrer(body);
 
-        cuadruplos.genGOTO("@" + comienzo);
-        //this.completa(M2, expression.getAttribute("listaV"));
-
-        //Cuadruplos.GEN_GOTO(M1 + "");
-        //int M3 = Cuadruplos.getSize();
-        //this.completa(M3, expression.getAttribute("listaF"));
+        cuadruplos.genGOTO("$" + comienzo);
     }
 
     private void cuadIf(Element nodo) throws Exception {
@@ -613,60 +586,37 @@ public class CodigoIntermedio {
             cuadruplos.gen(":=", expression.getAttribute("Value"), newTemp);
             String temp = nuevoTemp();
             cuadruplos.gen(":=", "1", temp);
-            //expression.setAttribute("listaV", this.crearLista(Cuadruplos.getSize()));
-            //expression.setAttribute("listaF", this.crearLista(Cuadruplos.getSize() + 1));
 
-            cuadruplos.gen("if=", newTemp, temp, "@" + verdaderaE);
-            cuadruplos.genGOTO("@" + falsaE);
+            cuadruplos.gen("if=", newTemp, temp, "$" + verdaderaE);
+            cuadruplos.genGOTO("$" + falsaE);
         } else {
             expression.setAttribute("Verdadera", verdaderaE);
             expression.setAttribute("Falsa", falsaE);
             cuadRelacional(expression);
         }
 
-        cuadruplos.genEtiq(verdaderaE);
+        cuadruplos.genEtiq("$" + verdaderaE);
         body.setAttribute("Siguiente", siguienteE);
 
         recorrer(body);
 
-        cuadruplos.genGOTO("@" + siguienteE);
-        cuadruplos.genEtiq("@" + falsaE);
-        /*
-        int N1 = cuadruplos.genGOTO("@");
-        nodo.setAttribute("listaF", crearLista(N1));
-        int M2 = cuadruplos.getSize();
+        cuadruplos.genGOTO("$" + siguienteE);
+        cuadruplos.genEtiq("$" + falsaE);
 
-        this.completa(M1, expression.getAttribute("listaV"));
-        this.completa(M2, expression.getAttribute("listaF"));
-         */
         switch (elseIfName) {
             case "IfStatement": {
                 elseIf.setAttribute("Siguiente", siguienteE);
                 cuadIf(elseIf);
-                /*
-                String listaF = elseIf.getAttribute("listaF");
-                nodo.setAttribute("listaF", fusiona(listaF, nodo.getAttribute("listaF")));
-                 */
+
                 break;
             }
             case "Body": {
                 elseIf.setAttribute("Siguiente", siguienteE);
                 recorrer(elseIf);
-                //Dudas en esta shit
-                //       cuadruplos.genGOTO("@" + siguienteE);
 
-                /*
-                int M3 = Cuadruplos.GEN_GOTO("@");
-                String listaF = nodo.getAttribute("listaF");
-                nodo.setAttribute("listaF", fusiona(listaF, this.crearLista(M3)));
-                break;
-                 */
             }
         }
 
-        cuadruplos.genEtiq("@" + siguienteE);
-        //  int endOfIf = Cuadruplos.getSize();
-        //  this.completa(endOfIf, nodo.getAttribute("listaF"));
     }
 
     private void cuadNot(Element nodo) throws Exception {
@@ -681,51 +631,32 @@ public class CodigoIntermedio {
 
         switch (arg1Name) {
             case "ID": {
-                /*
-                String arg1Value = arg1Node.getAttribute("Value");
-                arg1Node.setAttribute("listaV", crearLista(Cuadruplos.getSize()));
-                arg1Node.setAttribute("listaF", crearLista(Cuadruplos.getSize() + 1));
-                Cuadruplos.GEN("if=", arg1Value, "1", "@");
-                Cuadruplos.GEN_GOTO("@");
-                 */
+
                 String arg1Value = arg1.getAttribute("Value");
                 String verdadera = arg1.getAttribute("Verdadera");
                 String falsa = arg1.getAttribute("Falsa");
-                cuadruplos.gen("if=", arg1Value, "1", "@" + verdadera);
-                cuadruplos.genGOTO("@" + falsa);
+                cuadruplos.gen("if=", arg1Value, "1", "$" + verdadera);
+                cuadruplos.genGOTO("$" + falsa);
                 break;
             }
             case "Literal": {
-                /*
-                String arg1Value = arg1Node.getAttribute("Value");
-                arg1Node.setAttribute("listaV", crearLista(Cuadruplos.getSize()));
-                arg1Node.setAttribute("listaF", crearLista(Cuadruplos.getSize() + 1));
-                Cuadruplos.GEN("if=", arg1Value, "1", "@");
-                Cuadruplos.GEN_GOTO("@");
-                 */
+
                 String arg1Value = arg1.getAttribute("Value");
                 String verdadera = arg1.getAttribute("Verdadera");
                 String falsa = arg1.getAttribute("Falsa");
-                cuadruplos.gen("if=", arg1Value, "1", "@" + verdadera);
-                cuadruplos.genGOTO("@" + falsa);
+                cuadruplos.gen("if=", arg1Value, "1", "$" + verdadera);
+                cuadruplos.genGOTO("$" + falsa);
                 break;
             }
             case "ARRAY": {
-                /*
-                cuadArreglo(arg1);
-                String temp = this.getTemp();
-                arg1Node.setAttribute("listaV", crearLista(Cuadruplos.getSize()));
-                arg1Node.setAttribute("listaF", crearLista(Cuadruplos.getSize() + 1));
-                Cuadruplos.GEN("if=", temp, "1", "@");
-                Cuadruplos.GEN_GOTO("@");
-                 */
+
                 cuadArreglo(arg1);
                 String verdadera = arg1.getAttribute("Verdadera");
                 String falsa = arg1.getAttribute("Falsa");
 
                 String temp = getTemp();
-                cuadruplos.gen("if=", temp, "1", "@" + verdadera);
-                cuadruplos.genGOTO("@" + falsa);
+                cuadruplos.gen("if=", temp, "1", "$" + verdadera);
+                cuadruplos.genGOTO("$" + falsa);
 
                 break;
             }
@@ -784,12 +715,8 @@ public class CodigoIntermedio {
             cuadAritmetico(arg2);
             t2 = getTemp();
         }
-        /*
-        nodo.setAttribute("listaV", this.crearLista(Cuadruplos.getSize()));
-        nodo.setAttribute("listaF", this.crearLista(Cuadruplos.getSize() + 1));
-         */
-        cuadruplos.gen("if" + op, t1, t2, "@" + VerdaderaE);
-        cuadruplos.genGOTO("@" + falsaE);
+        cuadruplos.gen("if" + op, t1, t2, "$" + VerdaderaE);
+        cuadruplos.genGOTO("$" + falsaE);
     }
 
     public void cuadAsignacion(Element nodo) throws Exception {
@@ -826,15 +753,15 @@ public class CodigoIntermedio {
 
                 cuadRelacional(arg2);
                 String newTemp = nuevoTemp();
-                //int M1 = cuadruplos.getSize();
+
                 String asignacion = etiqNueva();
                 cuadruplos.genEtiq(arg2.getAttribute("Verdadera"));
                 cuadruplos.gen(":=", "1", "", newTemp);
-                cuadruplos.genGOTO("@" + asignacion);
-                //int M2 = cuadruplos.getSize();
+                cuadruplos.genGOTO("$" + asignacion);
+
                 cuadruplos.genEtiq(arg2.getAttribute("Falsa"));
                 cuadruplos.gen(":=", "0", "", newTemp);
-                cuadruplos.genEtiq("@" + asignacion);
+                cuadruplos.genEtiq("$" + asignacion);
                 temp2 = getTemp();
 
                 break;
@@ -924,8 +851,6 @@ public class CodigoIntermedio {
                     } else if (arg1EsArreglo) {
                         cuadAritmetico(arg1);
                         String tempArg = getTemp();
-                        //String temp = nuevoTemp();
-                        //cuadruplos.gen(":=", arg2.getAttribute("Value"), temp);
 
                         String temp = arg2.getAttribute("Value");
                         String operacion = nodo.getAttribute("Value");
@@ -935,8 +860,6 @@ public class CodigoIntermedio {
                     } else if (arg2EsArreglo) {
                         cuadAritmetico(arg2);
                         String tempArg = getTemp();
-                        //String temp = nuevoTemp();
-                        // cuadruplos.gen(":=", arg1.getAttribute("Value"), temp);
 
                         String temp = arg1.getAttribute("Value");
                         String operacion = nodo.getAttribute("Value");
@@ -1046,6 +969,78 @@ public class CodigoIntermedio {
         }
     }
 
+    private void cuadruploFuncCall(Element functionNode) throws Exception {
+        Element funcId = (Element) functionNode.getFirstChild();
+        Element funcArgsNode = (Element) functionNode.getLastChild();
+        if (funcArgsNode.getNodeName().equals("Arguments")) {
+            NodeList funcArgs = funcArgsNode.getChildNodes();
+            ArrayList<String> parameters = new ArrayList();
+            for (int i = 0; i < funcArgs.getLength(); i++) {
+                Element currentNode = (Element) funcArgs.item(i);
+                String argumentName = currentNode.getNodeName();
+                switch (argumentName) {
+                    case "ID":
+                    case "Literal": {
+                        String temp = nuevoTemp();
+                        cuadruplos.gen(":=", currentNode.getAttribute("Value"), temp);
+                        parameters.add(temp);
+                        break;
+                    }
+                    case "ARRAY": {
+                        cuadArreglo(currentNode);
+                        String temp = this.getTemp();
+                        parameters.add(temp);
+                        break;
+                    }
+                    case "AND":
+                    case "OR":
+                    case "NOT":
+                    case "GreaterThan":
+                    case "LessThan":
+                    case "Equals":
+                    case "LessOrEqual":
+                    case "GreaterOrEqual":
+                    case "Different": {
+                        currentNode.setAttribute("Verdadera", etiqNueva());
+                        currentNode.setAttribute("Falsa", etiqNueva());
+
+                        cuadRelacional(currentNode);
+                        String newTemp = nuevoTemp();
+
+                        String asignacion = etiqNueva();
+                        cuadruplos.genEtiq(currentNode.getAttribute("Verdadera"));
+                        cuadruplos.gen(":=", "1", "", newTemp);
+                        cuadruplos.genGOTO("$" + asignacion);
+
+                        cuadruplos.genEtiq(currentNode.getAttribute("Falsa"));
+                        cuadruplos.gen(":=", "0", "", newTemp);
+                        cuadruplos.genEtiq("$" + asignacion);
+                        parameters.add(newTemp);
+                        break;
+                    }
+
+                    case "Div":
+                    case "Minus":
+                    case "Times":
+                    case "Plus": {
+                        cuadAritmetico(currentNode);
+                        String temp = getTemp();
+                        parameters.add(temp);
+                        break;
+                    }
+                }
+            }
+
+            for (String Param : parameters) {
+                cuadruplos.genParam(Param);
+            }
+
+            String functionName = funcId.getAttribute("Value");
+            cuadruplos.genCall(functionName);
+        }
+
+    }
+
     private static String getEtiqueta() {
         return "etiq" + etiqCont;
     }
@@ -1055,16 +1050,20 @@ public class CodigoIntermedio {
     }
 
     private static String getTemp() {
-        return "t" + tempCont;
+        return "@t" + tempCont;
     }
 
     private String nuevoTemp() {
-        return "t" + ++tempCont;
+        return "@t" + ++tempCont;
     }
 
     @Override
     public String toString() {
         return cuadruplos.toString();
+    }
+    
+    public TablaCuadruplos getTablaCuadruplo(){
+        return this.cuadruplos;
     }
 
     public static String getTamañoTipo(String tipo) {
@@ -1074,5 +1073,7 @@ public class CodigoIntermedio {
             return "4";
         }
     }
+    
+    
 
 }

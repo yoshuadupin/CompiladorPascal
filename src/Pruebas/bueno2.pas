@@ -6,6 +6,7 @@ begin
   until (c='Y') or (c='N');
   writeln(c);
   if c='Y' then yesno:=true else yesno:=false;
+   result:= true; 
 end;
 
 var

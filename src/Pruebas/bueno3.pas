@@ -3,9 +3,13 @@ program fibonacci;
 function fib(n:integer): integer;
 begin
     if (n <= 2) then
-        fib := 1
+    begin
+        result := 1
+    end    
     else
-        fib := fib(n-1) + fib(n-2);
+    begin
+        result := fib(n-1) + fib(n-2);
+    end    
 end;
 
 var
@@ -13,6 +17,8 @@ var
 
 begin
     for i := 1 to 16 do
+    begin
         write(fib(i), ', ');
     writeln('...');
+    end
 end.

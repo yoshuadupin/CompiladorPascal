@@ -339,6 +339,9 @@ public class AnalizadorTipo {
             CodigoIntermedio ci = new CodigoIntermedio(tabla);
             ci.recorrer(nodoPadre);
             System.out.println(ci);
+            CodigoFinal mips = new CodigoFinal(tabla, ci.getTablaCuadruplo());
+            //TG.generateFinalCode();
+            //TG.printTargetCode();
         }
         return tabla;
     }

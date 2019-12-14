@@ -5,12 +5,12 @@
             <url>src/CodigoIntermedio/CodigoIntermedio.java</url>
             <bookmark id="3">
                 <name/>
-                <line>523</line>
+                <line>517</line>
                 <key/>
             </bookmark>
             <bookmark id="4">
                 <name/>
-                <line>571</line>
+                <line>556</line>
                 <key/>
             </bookmark>
         </file>
@@ -19,10 +19,8 @@
         <group>
             <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/CodigoIntermedio/CodigoIntermedio.java</file>
             <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Analizadores/AnalizadorTipo.java</file>
+            <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Analizadores/CodigoFinal.java</file>
             <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/CodigoIntermedio/TablaCuadruplos.java</file>
-            <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Analizadores/PascalCompiler.java</file>
-            <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Pruebas/bueno2.pas</file>
-            <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Pruebas/bueno1.pas</file>
             <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/CodigoIntermedio/Cuadruplo.java</file>
         </group>
     </open-files>

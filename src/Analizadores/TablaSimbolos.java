@@ -20,7 +20,11 @@ public class TablaSimbolos {
     String formatHeader = "|%-20s |%-60s |%-15s |%-15s  |%-15s |%-18s";
     String formatBody = "|%-20s |%-60s |%-15s |%-15s |%-15s |%-18s";
 
-   
+    public ArrayList<Simbolo> getSimbolos() {
+        return Simbolos;
+    }
+
+    
     
     public Simbolo getSimbolo(int index) throws Exception {
         if(index >= 0 && index < Simbolos.size()){

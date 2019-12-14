@@ -16,6 +16,12 @@ public class TablaCuadruplos {
 
     ArrayList<Cuadruplo> cuadruplos = new ArrayList<>();
 
+    public ArrayList<Cuadruplo> getCuadruplos() {
+        return cuadruplos;
+    }
+
+    
+
     //Generador para operaciones con  4 instrucciones
     public int gen(String op, String arg1, String arg2, String resultado) {
         int indice = cuadruplos.size();
@@ -40,6 +46,17 @@ public class TablaCuadruplos {
     public int genGOTO(String destination) {
         int indice = cuadruplos.size();
         cuadruplos.add(new Cuadruplo(indice, "GOTO", destination, "", ""));
+        return indice;
+    }
+    
+    public int genParam(String Param){
+        int indice = cuadruplos.size();
+        cuadruplos.add(new Cuadruplo(indice, "PARAM", Param, "", ""));
+        return indice;
+    }
+      public int genCall(String FuncName){
+        int indice = cuadruplos.size();
+        cuadruplos.add(new Cuadruplo(indice, "CALL", FuncName, "", ""));
         return indice;
     }
 
