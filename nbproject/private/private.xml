@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="4">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="7">
         <file>
             <url>src/CodigoIntermedio/CodigoIntermedio.java</url>
             <bookmark id="3">
@@ -14,6 +14,22 @@
                 <key/>
             </bookmark>
         </file>
+        <file>
+            <url>src/Analizadores/AnalizadorTipo.java</url>
+            <bookmark id="5">
+                <name/>
+                <line>342</line>
+                <key/>
+            </bookmark>
+        </file>
+        <file>
+            <url>src/Analizadores/CodigoFinal.java</url>
+            <bookmark id="7">
+                <name/>
+                <line>296</line>
+                <key/>
+            </bookmark>
+        </file>
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
@@ -21,6 +37,9 @@
             <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Analizadores/AnalizadorTipo.java</file>
             <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Analizadores/CodigoFinal.java</file>
             <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/CodigoIntermedio/TablaCuadruplos.java</file>
+            <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Analizadores/PascalCompiler.java</file>
+            <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Analizadores/TablaSimbolos.java</file>
+            <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/Pruebas/bueno1.pas</file>
             <file>file:/C:/Users/Rose/Documents/CompiladorPascal/src/CodigoIntermedio/Cuadruplo.java</file>
         </group>
     </open-files>
