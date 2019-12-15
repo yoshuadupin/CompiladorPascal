@@ -1025,7 +1025,13 @@ BoolExpr2       ::= BoolExpr2:e1 OperadorAnd:op BoolExpr3:e2
                     nPadre.appendChild(e1);
                     nPadre.appendChild(e2);
                     RESULT = nPadre;
-                :} 
+                :}
+                |   var:v
+                {:
+                    iniXML();
+                    RESULT = v; 
+                    
+                :}
                 | BoolExpr3:e1
                 {:
                     iniXML();
